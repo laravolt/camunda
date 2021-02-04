@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Laravolt\Camunda\Models;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Laravolt\Camunda\Exceptions\ParseException;
 
 class Deployment extends CamundaModel
 {
-    public $name;
-    public $source;
-    public $deploymentTime;
+    public string $name;
+    public string $source;
+    public Carbon $deploymentTime;
 
-    public static function fromApiResponse(array $data)
+    public static function fromApiResponse(array $data): self
     {
         return new self([
             'id' => $data['id'],
             'name' => $data['name'],
             'source' => $data['source'],
-            'deploymentTime' => $data['deploymentTime'],
+            'deploymentTime' => Carbon::parse($data['deploymentTime']),
         ]);
     }
 
