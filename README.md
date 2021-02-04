@@ -15,6 +15,7 @@ Add following config to `config/services.php`:
 ],
 ```
 
+And of course prepare your `.env`:
 ```
 CAMUNDA_URL=http://localhost:8080/engine-rest
 #optional
@@ -41,4 +42,25 @@ CAMUNDA_PASSWORD=
 @TODO
 
 ### Deployment
-@TODO
+```php
+use Laravolt\Camunda\Models\Deployment;
+
+// Deploy bpmn file(s)
+Deployment::create('test-deploy', '/path/to/file.bpmn');
+Deployment::create('test-deploy', ['/path/to/file1.bpmn', '/path/to/file2.bpmn']);
+
+// Get deployment list
+Deployment::getList();
+
+// Get deployment detail
+Deployment::get($id);
+
+// Truncate (delete all) deployments
+$cascade = true; // or false
+Deployment::truncate($cascade);
+
+// Delete single deployment
+$deployment = Deployment::create('test-deploy', '/path/to/file.bpmn');
+$cascade = true; // or false
+$deployment->delete($cascade);
+```
