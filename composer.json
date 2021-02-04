@@ -13,13 +13,20 @@
         }
     ],
     "require": {
-        "php": ">=7.3",
-        "illuminate/support": "^6.0",
-        "guzzlehttp/guzzle": "^6.5"
+        "php": ">=8.0",
+        "ext-simplexml": "*",
+        "illuminate/support": "^8.0",
+        "spatie/data-transfer-object": "^2.8",
+        "guzzlehttp/guzzle": "^7.2"
     },
     "autoload": {
         "psr-4": {
             "Laravolt\\Camunda\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Laravolt\\Camunda\\Tests\\": "tests"
         }
     },
     "extra": {
@@ -31,5 +38,8 @@
                 "Laravolt\\Camunda\\ServiceProvider"
             ]
         }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.11"
     }
 }

@@ -4,46 +4,14 @@ declare(strict_types=1);
 
 namespace Laravolt\Camunda\Models;
 
-use GuzzleHttp\Client;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
+use Spatie\DataTransferObject\DataTransferObject;
 
-abstract class CamundaModel
+abstract class CamundaModel extends DataTransferObject
 {
-    protected $client;
-
     public $id;
-
-    public $key;
-
-    public $tenantId;
-
-    public function __construct($id = null, $attributes = [])
-    {
-        $this->tenantId = Config::get('laravolt.camunda.api.tenant_id');
-        $urls = parse_url(Config::get('laravolt.camunda.api.url', ''));
-
-        $port = '';
-        if (isset($urls['port'])) {
-            $port = ':'.$urls['port'];
-        }
-
-        $this->client = new Client([
-            'base_uri' => sprintf('%s://%s%s', $urls['scheme'], $urls['host'], $port),
-        ]);
-
-        $this->id = $id;
-
-        foreach ($attributes as $key => $value) {
-            $this->{$key} = $value;
-        }
-    }
-
-    public function __toString()
-    {
-        return $this->id ?? $this->key;
-    }
 
     public function fetch()
     {

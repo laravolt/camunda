@@ -4,49 +4,53 @@ declare(strict_types=1);
 
 namespace Laravolt\Camunda\Models;
 
+use Illuminate\Support\Facades\Http;
+use Laravolt\Camunda\Exceptions\ParseException;
+
 class Deployment extends CamundaModel
 {
-    public static function all()
-    {
-        $results = (new static())->request('deployment', 'get');
-        $deployments = [];
-        foreach ($results as $result) {
-            $deployments[] = new static($result->id, $result);
-        }
+    public $name;
+    public $source;
+    public $deploymentTime;
 
-        return $deployments;
+    public static function fromApiResponse(array $data)
+    {
+        return new self([
+            'id' => $data['id'],
+            'name' => $data['name'],
+            'source' => $data['source'],
+            'deploymentTime' => $data['deploymentTime'],
+        ]);
     }
 
-    public function create($name, $bpmnFiles)
+    public static function create($name, $bpmnFiles): self
     {
-        $bpmnFiles = (array) $bpmnFiles;
-        $attachments = [];
-        foreach ($bpmnFiles as $bpmn) {
-            $filename = pathinfo($bpmn)['basename'];
-
-            $attachments[] = [
-                'name' => $filename,
-                'contents' => file_get_contents($bpmn),
-                'filename' => $filename,
-            ];
-        }
-
         $multipart = [
-            [
-                'name' => 'deployment-name',
-                'contents' => $name,
-            ],
+            ['name' => 'deployment-name', 'contents' => $name],
+            ['name' => 'deployment-source', 'contents' => sprintf('%s (%s)', config('app.name'), config('app.env'))],
+            ['name' => 'enable-duplicate-filtering', 'contents' => 'true'],
         ];
 
-        if ($this->tenantId) {
+        if (config('services.camunda.tenant_id')) {
             $multipart[] = [
                 'name' => 'tenant-id',
-                'contents' => $this->tenantId,
+                'contents' => config('services.camunda.tenant_id'),
             ];
         }
 
-        return $this->post('deployment/create', [
-            'multipart' => array_merge($multipart, $attachments),
-        ]);
+        $request = Http::withOptions(['multipart' => $multipart]);
+
+        foreach ((array)$bpmnFiles as $bpmn) {
+            $filename = pathinfo($bpmn)['basename'];
+            $request->attach($filename, file_get_contents($bpmn), $filename);
+        }
+
+        $response = $request->post(config('services.camunda.url').'deployment/create');
+
+        if ($response->status() === 400) {
+            throw new ParseException($response->json('message'));
+        }
+
+        return self::fromApiResponse($response->json());
     }
 }
