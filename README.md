@@ -16,7 +16,8 @@ Add following config to `config/services.php`:
 ```
 
 And of course prepare your `.env`:
-```
+
+```dotenv
 CAMUNDA_URL=http://localhost:8080/engine-rest
 #optional
 CAMUNDA_TENANT_ID=
@@ -64,3 +65,15 @@ $deployment = Deployment::create('test-deploy', '/path/to/file.bpmn');
 $cascade = true; // or false
 $deployment->delete($cascade);
 ```
+
+### Raw Endpoint
+You can utilize `Laravolt\Camunda\CamundaClient` to call any endpoint where you can build your own request.
+```php
+use Laravolt\Camunda\CamundaClient;
+
+$response = CamundaClient::make()->get('version');
+echo $response->status(); // 200
+echo $response->object(); // sdtClass
+echo $response->json(); // array, something like ["version" => "7.14.0"]
+```
+> `CamundaClient::make()` is just a wrapper for [Laravel HTTP Client](https://laravel.com/docs/master/http-client) with base URL already set based on your Camunda services configuration.
