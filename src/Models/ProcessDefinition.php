@@ -4,45 +4,47 @@ declare(strict_types=1);
 
 namespace Laravolt\Camunda\Models;
 
+use Laravolt\Camunda\Exceptions\InvalidArgumentException;
+use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
+
 class ProcessDefinition extends CamundaModel
 {
-    public static function byKey($key)
-    {
-        $processDefinition = new self();
-        $processDefinition->key = $key;
+    public string $key;
+    public string $category;
+    public ?string $name;
+    public ?string $description;
+    public int $version;
+    public string $resource;
+    public string $deploymentId;
+    public ?string $diagram;
+    public bool $suspended;
+    public ?string $tenantId;
+    public ?string $versionTag;
+    public ?string $historyTimeToLive;
+    public bool $startableInTasklist;
 
-        return $processDefinition;
+    public static function fromResponse(array $data)
+    {
+        return new self($data);
     }
 
-    public static function all()
-    {
-        $results = (new static())->request('process-definition', 'get');
-        $processDefinitions = [];
-        foreach ($results as $result) {
-            $processDefinitions[] = new static($result->id, $result);
-        }
-
-        return $processDefinitions;
-    }
-
-    public function startInstance($data = [], $businessKey = null)
+    public function start(array $variables = [], string $businessKey = null): ProcessInstance
     {
         // At least one value must be set...
-        if (count($data) == 0) {
-            $data['a'] = 'b';
+        if (empty($variables)) {
+            throw new InvalidArgumentException('Cannot start process instance with empty variables');
         }
 
-        $payload = [
-            'variables' => $this->formatVariables($data),
-        ];
-
+        $payload = ['variables' => $variables];
         if ($businessKey) {
             $payload['businessKey'] = $businessKey;
         }
+        $response = self::request()->asJson()->post("process-definition/{$this->id}/start", $payload);
 
-        $processDefinition = $this->post('start', $payload, true);
-
-        return new ProcessInstance($processDefinition->id, ['businessKey' => $businessKey]);
+        return new ProcessInstance([
+            'id' => $response->json('id'),
+            'businessKey' => $response->json('businessKey'),
+        ]);
     }
 
     public function xml()
@@ -50,9 +52,26 @@ class ProcessDefinition extends CamundaModel
         return $this->get('xml')->bpmn20Xml;
     }
 
-    public function getInfo()
+    public static function get(string $id): self
     {
-        return $this->get('');
+        $response = self::request()->get("process-definition/$id");
+
+        if ($response->status() === 404) {
+            throw new ObjectNotFoundException($response->json('message'));
+        }
+
+        return self::fromResponse($response->json());
+    }
+
+    public static function getByKey(string $key): self
+    {
+        $response = self::request()->get("process-definition/key/$key");
+
+        if ($response->status() === 404) {
+            throw new ObjectNotFoundException($response->json('message'));
+        }
+
+        return self::fromResponse($response->json());
     }
 
     public function getXml()
@@ -70,6 +89,6 @@ class ProcessDefinition extends CamundaModel
 
         $startTaskName = $parser->xpath('//bpmn:startEvent');
 
-        return (string) data_get($startTaskName, '0')['id'] ?? false;
+        return (string)data_get($startTaskName, '0')['id'] ?? false;
     }
 }

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class ProcessInstance extends CamundaModel
 {
+    public ?string $businessKey;
+
     protected $processDefinition;
 
     protected $parentProcessInstance;

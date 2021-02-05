@@ -16,13 +16,21 @@ class Deployment extends CamundaModel
 
     public Carbon $deploymentTime;
 
+    public array $processDefinitions = [];
+
     public static function fromApiResponse(array $data): self
     {
+        $processDefinitions = [];
+        foreach ($data['deployedProcessDefinitions'] ?? [] as $deployedProcessDefinitions) {
+            $processDefinitions[] = new ProcessDefinition($deployedProcessDefinitions);
+        }
+
         return new self([
             'id' => $data['id'],
             'name' => $data['name'],
             'source' => $data['source'],
             'deploymentTime' => Carbon::parse($data['deploymentTime']),
+            'processDefinitions' => $processDefinitions,
         ]);
     }
 
