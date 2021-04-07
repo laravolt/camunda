@@ -15,7 +15,7 @@
     "require": {
         "php": ">=8.0",
         "ext-simplexml": "*",
-        "spatie/data-transfer-object": "^2.8",
+        "spatie/data-transfer-object": "^3.0",
         "guzzlehttp/guzzle": "^7.2"
     },
     "autoload": {

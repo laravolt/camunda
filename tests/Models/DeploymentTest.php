@@ -107,7 +107,12 @@ class DeploymentTest extends TestCase
     {
         $this->expectException(ObjectNotFoundException::class);
 
-        $deployment = new Deployment(['id' => 'invalid-id', 'name' => 'test', 'deploymentTime' => now()]);
+        $deployment = new Deployment(
+            id: 'invalid-id',
+            name: 'test',
+            deploymentTime: now(),
+            processDefinitions: []
+        );
         $deployment->delete();
     }
 

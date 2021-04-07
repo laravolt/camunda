@@ -10,9 +10,9 @@ use Laravolt\Camunda\Exceptions\ParseException;
 
 class Deployment extends CamundaModel
 {
-    public string $name;
+    public ?string $name;
 
-    public string $source = "";
+    public ?string $source;
 
     public Carbon $deploymentTime;
 
