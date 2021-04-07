@@ -6,6 +6,28 @@ namespace Laravolt\Camunda\Models;
 
 class Task extends CamundaModel
 {
+    public $name;
+    public $assignee;
+    public $date;
+    public $due;
+    public $followUp;
+    public $delegationState;
+    public $description;
+    public $executionId;
+    public $owner;
+    public $parentTaskId;
+    public $priority;
+    public $processDefinitionId;
+    public $processInstanceId;
+    public $taskDefinitionId;
+    public $taskDefinitionKey;
+    public $caseExecutionId;
+    public $caseInstanceId;
+    public $caseDefinitionId;
+    public $suspended;
+    public $formKey;
+    public $tenantId;
+    public $created;
     protected $processInstance;
 
     public function processInstance(): ProcessInstance
@@ -36,12 +58,8 @@ class Task extends CamundaModel
     public function submit(array $data)
     {
         $payload = ['variables' => $this->formatVariables($data)];
+        $response = self::request()->post("task/{$this->id}/submit-form", $payload);
 
-        return $this->post('submit-form', $payload);
-    }
-
-    public function complete()
-    {
-        return $this->post('complete');
+        return $response->status() === 204;
     }
 }

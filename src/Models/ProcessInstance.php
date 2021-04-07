@@ -7,22 +7,43 @@ namespace Laravolt\Camunda\Models;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 
 class ProcessInstance extends CamundaModel
 {
-    public ?string $businessKey;
-
+    public array $links;
+    public string $definitionId;
+    public string $businessKey;
+    public ?string $caseInstanceId;
+    public bool $ended;
+    public bool $suspended;
+    public ?string $tenantId;
     protected $processDefinition;
-
     protected $parentProcessInstance;
+
+    public static function find(string $id): self
+    {
+        $response = self::request()->get("process-instance/$id");
+
+        if ($response->status() === 404) {
+            throw new ObjectNotFoundException($response->json('message'));
+        }
+
+        return self::fromResponse($response->json());
+    }
+
+    public static function fromResponse(array $data)
+    {
+        return new self($data);
+    }
 
     public function processDefinition(): ?ProcessDefinition
     {
         $id = $key = null;
-        if (!$this->processDefinition) {
+        if (! $this->processDefinition) {
             $id = $this->processDefinitionId ?? $this->definitionId ?? null;
 
-            if (!$id) {
+            if (! $id) {
                 $key = DB::table('camunda_task')
                     ->where('process_instance_id', $this->id)
                     ->value('process_definition_key');
@@ -56,23 +77,38 @@ class ProcessInstance extends CamundaModel
     {
         $tasks = $this->tasks();
 
-        return count($tasks) > 0 ? new Task($tasks[0]->id, $tasks[0]) : null;
+        return $tasks[0] ?? null;
     }
 
     public function tasks(array $whitelist = [])
     {
         $url = 'task/?processInstanceId='.$this->id;
 
-        if (!empty($whitelist)) {
+        if (! empty($whitelist)) {
             $whitelist = implode(',', $whitelist);
             $url .= '&taskDefinitionKeyIn='.$whitelist;
         }
 
-        $tasks = $this->get($url);
+        $tasks = $this->request()->get($url)->json();
 
         $data = [];
         foreach ($tasks as $task) {
-            $task = new Task($task->id, $task);
+            $task = new Task($task);
+            $task->setProcessInstance($this);
+            $data[] = $task;
+        }
+
+        return $data;
+    }
+
+    public function completedTasks()
+    {
+        $url = 'history/task/?processInstanceId='.$this->id;
+
+        $tasks = self::request()->get($url)->json();
+        $data = [];
+        foreach ($tasks as $task) {
+            $task = new TaskHistory($task);
             $task->setProcessInstance($this);
             $data[] = $task;
         }
@@ -82,10 +118,14 @@ class ProcessInstance extends CamundaModel
 
     public function setVariable($key, $value, $type = 'String')
     {
-        $this->put('variables/'.$key, [
-            'type' => $type,
-            'value' => $value,
-        ], true);
+        $this->put(
+            'variables/'.$key,
+            [
+                'type' => $type,
+                'value' => $value,
+            ],
+            true
+        );
     }
 
     public function setVariables(array $modifications, array $deletions = [])
@@ -93,10 +133,14 @@ class ProcessInstance extends CamundaModel
         $modifications = $this->formatVariables($modifications);
         $deletions = $this->formatVariables($deletions);
 
-        $this->post('variables', [
-            'modifications' => $modifications,
-            'deletions' => $deletions,
-        ], true);
+        $this->post(
+            'variables',
+            [
+                'modifications' => $modifications,
+                'deletions' => $deletions,
+            ],
+            true
+        );
     }
 
     public function getInfo()
@@ -126,7 +170,11 @@ class ProcessInstance extends CamundaModel
 
     public function getEndEventId()
     {
-        return optional(Arr::first($this->get('history/activity-instance/?processInstanceId='.$this->id.'&activityType=noneEndEvent')))->activityId;
+        return optional(
+            Arr::first(
+                $this->get('history/activity-instance/?processInstanceId='.$this->id.'&activityType=noneEndEvent')
+            )
+        )->activityId;
     }
 
     public function modify($data)
@@ -160,19 +208,28 @@ class ProcessInstance extends CamundaModel
      */
     public function undo()
     {
-        $activities = $this->get('history/activity-instance?processInstanceId='.$this->id.'&sortBy=startTime&sortOrder=desc&activityType=userTask');
+        $activities = $this->get(
+            'history/activity-instance?processInstanceId='.$this->id
+            .'&sortBy=startTime&sortOrder=desc&activityType=userTask'
+        );
 
         $activities = collect($activities)
-            ->reject(function ($item) {
-                return $item->canceled;
-            });
+            ->reject(
+                function ($item) {
+                    return $item->canceled;
+                }
+            );
 
         $currenctActivity = $activities->shift();
         $previousActivity = $activities->shift();
 
-        if (!$currenctActivity || !$previousActivity) {
-            throw new \DomainException(sprintf('Process instance %s tidak memiliki Activity Instance yang valid',
-                $this->id));
+        if (! $currenctActivity || ! $previousActivity) {
+            throw new \DomainException(
+                sprintf(
+                    'Process instance %s tidak memiliki Activity Instance yang valid',
+                    $this->id
+                )
+            );
         }
 
         $cancellation = new \stdClass();
@@ -194,7 +251,7 @@ class ProcessInstance extends CamundaModel
 
             return [$previousActivity, $currenctActivity];
         } catch (ClientException $e) {
-            $message = json_decode((string) $e->getResponse()->getBody())->message ?? $e->getMessage();
+            $message = json_decode((string)$e->getResponse()->getBody())->message ?? $e->getMessage();
 
             throw new \Exception($message);
         }
@@ -202,19 +259,26 @@ class ProcessInstance extends CamundaModel
 
     public function moveTo(string $taskDefinitionKey)
     {
-        $activities = $this->get('history/activity-instance?processInstanceId='.$this->id.'&sortBy=startTime&sortOrder=asc&activityType=userTask');
+        $activities = $this->get(
+            'history/activity-instance?processInstanceId='.$this->id
+            .'&sortBy=startTime&sortOrder=asc&activityType=userTask'
+        );
 
         $activities = collect($activities)
-            ->reject(function ($item) {
-                return $item->canceled;
-            });
+            ->reject(
+                function ($item) {
+                    return $item->canceled;
+                }
+            );
 
         $targetActivity = $activities->firstWhere('activityId', $taskDefinitionKey);
-        $targetActivityIndex = $activities->search(function ($item) use ($targetActivity) {
-            return  $item->id == $targetActivity->id;
-        });
+        $targetActivityIndex = $activities->search(
+            function ($item) use ($targetActivity) {
+                return $item->id == $targetActivity->id;
+            }
+        );
 
-        if (!$targetActivity) {
+        if (! $targetActivity) {
             throw new \DomainException(sprintf('Invalid $taskDefinitionKey: %s', $taskDefinitionKey));
         }
 
@@ -246,7 +310,7 @@ class ProcessInstance extends CamundaModel
 
             return $canceledActivities->prepend($targetActivity);
         } catch (ClientException $e) {
-            $message = json_decode((string) $e->getResponse()->getBody())->message ?? $e->getMessage();
+            $message = json_decode((string)$e->getResponse()->getBody())->message ?? $e->getMessage();
 
             throw new \Exception($message);
         }

@@ -50,7 +50,6 @@ class Deployment extends CamundaModel
         }
 
         $request = self::request()->withOptions(['multipart' => $multipart]);
-
         foreach ((array)$bpmnFiles as $bpmn) {
             $filename = pathinfo($bpmn)['basename'];
             $request->attach($filename, file_get_contents($bpmn), $filename);

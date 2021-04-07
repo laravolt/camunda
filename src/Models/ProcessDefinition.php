@@ -35,16 +35,13 @@ class ProcessDefinition extends CamundaModel
             throw new InvalidArgumentException('Cannot start process instance with empty variables');
         }
 
-        $payload = ['variables' => $variables];
+        $payload = ['variables' => $this->formatVariables($variables)];
         if ($businessKey) {
             $payload['businessKey'] = $businessKey;
         }
         $response = self::request()->asJson()->post("process-definition/{$this->id}/start", $payload);
 
-        return new ProcessInstance([
-            'id' => $response->json('id'),
-            'businessKey' => $response->json('businessKey'),
-        ]);
+        return new ProcessInstance($response->json());
     }
 
     public function xml()
@@ -52,7 +49,18 @@ class ProcessDefinition extends CamundaModel
         return $this->get('xml')->bpmn20Xml;
     }
 
-    public static function get(string $id): self
+    public static function getList(): array
+    {
+        $response = self::request()->get("process-definition");
+        $processDefinition = [];
+        foreach ($response->json() as $res) {
+            $processDefinition[] = self::fromResponse($res);
+        }
+
+        return $processDefinition;
+    }
+
+    public static function find(string $id): self
     {
         $response = self::request()->get("process-definition/$id");
 
@@ -63,7 +71,7 @@ class ProcessDefinition extends CamundaModel
         return self::fromResponse($response->json());
     }
 
-    public static function getByKey(string $key): self
+    public static function findByKey(string $key): self
     {
         $response = self::request()->get("process-definition/key/$key");
 
@@ -76,19 +84,6 @@ class ProcessDefinition extends CamundaModel
 
     public function getXml()
     {
-        return $this->get('xml');
-    }
-
-    public function getStartTaskName()
-    {
-        $xml = $this->getXml()->bpmn20Xml;
-
-        $parser = new \SimpleXMLElement($xml);
-        $parser->registerXPathNamespace('bpmn', 'http://www.omg.org/spec/BPMN/20100524/MODEL');
-        $parser->registerXPathNamespace('camunda', 'http://camunda.org/schema/1.0/bpmn');
-
-        $startTaskName = $parser->xpath('//bpmn:startEvent');
-
-        return (string)data_get($startTaskName, '0')['id'] ?? false;
+        return $this->request('xml');
     }
 }

@@ -15,7 +15,7 @@ class ProcessDefinitionTest extends TestCase
     public function it_can_start_new_process_instance(): void
     {
         $this->deploySampleBpmn();
-        $processDefinition = ProcessDefinition::getByKey('process_1');
+        $processDefinition = ProcessDefinition::findByKey('process_1');
 
         $variables = ['title' => ['value' => 'Sample Title', 'type' => 'string']];
         $businessKey = 'key-1';

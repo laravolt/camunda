@@ -31,16 +31,6 @@ abstract class CamundaModel extends DataTransferObject
         return $this;
     }
 
-    protected function post(string $url, array $data = [], bool $json = true)
-    {
-        return $this->request($url, 'post', $this->getData($data, $json));
-    }
-
-    protected function put(string $url, array $data = [], bool $json = true)
-    {
-        return $this->request($url, 'put', $this->getData($data, $json));
-    }
-
     protected function getData(array $data, bool $json): array
     {
         if (Arr::has($data, 'multipart')) {
@@ -77,6 +67,25 @@ abstract class CamundaModel extends DataTransferObject
 
     protected function formatVariables(array $data): array
     {
-        return $data;
+        $map = [
+            'status_administrasi' => 'Boolean',
+            'lulus_wawancara' => 'Boolean',
+        ];
+        return collect($data)->transform(
+            function ($item, $key) use ($map) {
+
+                $type = $map[$key] ?? 'String';
+
+                $item = match ($type) {
+                    'Boolean' => (bool) $item,
+                    default => $item
+                };
+
+                return [
+                    'type' => $type,
+                    'value' => $item,
+                ];
+            }
+        )->toArray();
     }
 }
