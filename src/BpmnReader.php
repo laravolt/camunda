@@ -24,10 +24,15 @@ class BpmnReader
                 $fields = $node->xpath('bpmn:extensionElements/camunda:formData/camunda:formField');
                 $formFields = [];
                 foreach ($fields as $field) {
+                    $properties = collect($field->xpath('camunda:properties/camunda:property'))
+                    ->transform(fn($node) => [(string)$node->attributes()->id => (string)$node->attributes()->value])
+                    ->toArray();
+
                     $formFields[] = [
                         'id' => (string)$field->attributes()->id,
                         'label' => (string)$field->attributes()->label,
                         'type' => (string)$field->attributes()->type,
+                        'properties' => $properties
                     ];
                 }
                 $form = [
@@ -35,7 +40,7 @@ class BpmnReader
                     'label' => (string)$node->attributes()->name,
                     'fields' => $formFields
                 ];
-                $forms[] = [];
+                $forms[] = $form;
             } catch (\ErrorException $exception) {
 
             }
