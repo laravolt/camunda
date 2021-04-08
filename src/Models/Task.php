@@ -30,6 +30,8 @@ class Task extends CamundaModel
     public $created;
     protected $processInstance;
 
+    protected string $endpoint = 'task';
+
     public function processInstance(): ProcessInstance
     {
         if (!$this->processInstance) {

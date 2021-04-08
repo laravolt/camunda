@@ -46,7 +46,7 @@ class ProcessDefinition extends CamundaModel
 
     public function xml()
     {
-        return $this->get('xml')->bpmn20Xml;
+        return self::request()->get("process-definition/{$this->id}/xml")->json('bpmn20Xml');
     }
 
     public static function getList(): array

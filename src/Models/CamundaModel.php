@@ -15,6 +15,8 @@ abstract class CamundaModel extends DataTransferObject
 {
     public $id;
 
+    protected string $endpoint = '';
+
     public static function request(): PendingRequest
     {
         return CamundaClient::make();
@@ -22,7 +24,7 @@ abstract class CamundaModel extends DataTransferObject
 
     public function fetch()
     {
-        $attributes = $this->get('');
+        $attributes = self::request()->get("{$this->endpoint}/{$this->id}")->json();
 
         foreach ($attributes as $key => $value) {
             $this->{$key} = $value;
