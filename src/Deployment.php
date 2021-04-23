@@ -2,39 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Laravolt\Camunda\Models;
+namespace Laravolt\Camunda;
 
-use Carbon\Carbon;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Exceptions\ParseException;
 
-class Deployment extends CamundaModel
+class Deployment extends CamundaClient
 {
-    public ?string $name;
-
-    public ?string $source;
-
-    public Carbon $deploymentTime;
-
-    public array $processDefinitions = [];
-
-    public static function fromApiResponse(array $data): self
-    {
-        $processDefinitions = [];
-        foreach ($data['deployedProcessDefinitions'] ?? [] as $deployedProcessDefinitions) {
-            $processDefinitions[] = new ProcessDefinition($deployedProcessDefinitions);
-        }
-
-        return new self([
-            'id' => $data['id'],
-            'name' => $data['name'],
-            'source' => $data['source'],
-            'deploymentTime' => Carbon::parse($data['deploymentTime']),
-            'processDefinitions' => $processDefinitions,
-        ]);
-    }
-
-    public static function create(string $name, string|array $bpmnFiles): self
+    public static function create(string $name, string|array $bpmnFiles): \Laravolt\Camunda\Dto\Deployment
     {
         $multipart = [
             ['name' => 'deployment-name', 'contents' => $name],
@@ -49,7 +24,7 @@ class Deployment extends CamundaModel
             ];
         }
 
-        $request = self::request()->withOptions(['multipart' => $multipart]);
+        $request = self::make()->withOptions(['multipart' => $multipart]);
         foreach ((array)$bpmnFiles as $bpmn) {
             $filename = pathinfo($bpmn)['basename'];
             $request->attach($filename, file_get_contents($bpmn), $filename);
@@ -61,27 +36,26 @@ class Deployment extends CamundaModel
             throw new ParseException($response->json('message'));
         }
 
-        return self::fromApiResponse($response->json());
+        return new \Laravolt\Camunda\Dto\Deployment($response->json());
     }
 
-    public static function get(string $id): Deployment
+    public static function find(string $id): \Laravolt\Camunda\Dto\Deployment
     {
-        $response = self::request()->get("deployment/$id");
+        $response = self::make()->get("deployment/$id");
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        return self::fromApiResponse($response->json());
-
+        return new \Laravolt\Camunda\Dto\Deployment($response->json());
     }
 
-    public static function getList(): array
+    public static function get(): array
     {
-        $response = self::request()->get('deployment');
+        $response = self::make()->get('deployment');
         $result = [];
         foreach ($response->json() as $data) {
-            $result[] = self::fromApiResponse($data);
+            $result[] = new \Laravolt\Camunda\Dto\Deployment($data);
         }
 
         return $result;
@@ -89,16 +63,16 @@ class Deployment extends CamundaModel
 
     public static function truncate(bool $cascade = false): void
     {
-        $deployments = self::getList();
+        $deployments = self::get();
         foreach ($deployments as $deployment) {
-            $deployment->delete($cascade);
+            self::delete($deployment->id, $cascade);
         }
     }
 
-    public function delete(bool $cascade = false): bool
+    public static function delete(string $id, bool $cascade = false): bool
     {
         $cascadeFlag = $cascade ? 'cascade=true' : '';
-        $response = self::request()->delete("deployment/{$this->id}?".$cascadeFlag);
+        $response = self::make()->delete("deployment/{$id}?".$cascadeFlag);
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));

@@ -4,7 +4,7 @@ namespace Laravolt\Camunda\Tests\Models;
 
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Exceptions\ParseException;
-use Laravolt\Camunda\Models\Deployment;
+use Laravolt\Camunda\Deployment;
 use Laravolt\Camunda\Tests\TestCase;
 
 class DeploymentTest extends TestCase
@@ -63,7 +63,7 @@ class DeploymentTest extends TestCase
         $files = __DIR__.'/../../resources/sample.bpmn';
         $deployment1 = Deployment::create('test', $files);
 
-        $deployment2 = Deployment::get($deployment1->id);
+        $deployment2 = Deployment::find($deployment1->id);
         $this->assertEquals($deployment1->id, $deployment2->id);
     }
 
@@ -74,7 +74,7 @@ class DeploymentTest extends TestCase
     {
         $this->expectException(ObjectNotFoundException::class);
 
-        Deployment::get('some-invalid-id');
+        Deployment::find('some-invalid-id');
     }
 
     /**
@@ -85,7 +85,7 @@ class DeploymentTest extends TestCase
         Deployment::create('deployment1', __DIR__.'/../../resources/sample.bpmn');
         Deployment::create('deployment2', __DIR__.'/../../resources/sample2.bpmn');
 
-        $deployments = Deployment::getList();
+        $deployments = Deployment::get();
         $this->assertCount(2, $deployments);
     }
 
@@ -95,7 +95,7 @@ class DeploymentTest extends TestCase
     public function it_can_delete_deployment(): void
     {
         $deployment = Deployment::create('deployment1', __DIR__.'/../../resources/sample.bpmn');
-        $deleted = $deployment->delete();
+        $deleted = Deployment::delete($deployment->id);
 
         $this->assertTrue($deleted);
     }
@@ -107,13 +107,13 @@ class DeploymentTest extends TestCase
     {
         $this->expectException(ObjectNotFoundException::class);
 
-        $deployment = new Deployment(
+        $deployment = new \Laravolt\Camunda\Dto\Deployment(
             id: 'invalid-id',
             name: 'test',
             deploymentTime: now(),
             processDefinitions: []
         );
-        $deployment->delete();
+        Deployment::delete($deployment->id);
     }
 
     /**
@@ -126,7 +126,7 @@ class DeploymentTest extends TestCase
 
         Deployment::truncate();
 
-        $deployments = Deployment::getList();
+        $deployments = Deployment::get();
         $this->assertCount(0, $deployments);
     }
 }

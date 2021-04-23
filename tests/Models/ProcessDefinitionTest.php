@@ -2,7 +2,6 @@
 
 namespace Laravolt\Camunda\Tests\Models;
 
-use Illuminate\Support\Arr;
 use Laravolt\Camunda\Models\ProcessDefinition;
 use Laravolt\Camunda\Models\ProcessInstance;
 use Laravolt\Camunda\Tests\TestCase;
