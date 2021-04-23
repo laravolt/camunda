@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Laravolt\Camunda;
+namespace Laravolt\Camunda\Http;
 
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Exceptions\ParseException;
 
-class Deployment extends CamundaClient
+class DeploymentClient extends CamundaClient
 {
     public static function create(string $name, string|array $bpmnFiles): \Laravolt\Camunda\Dto\Deployment
     {

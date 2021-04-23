@@ -2,75 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Laravolt\Camunda\Models;
+namespace Laravolt\Camunda\Http;
 
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 
-class ProcessInstance extends CamundaModel
+class ProcessInstanceClient extends CamundaClient
 {
-    public array $links;
-    public string $definitionId;
-    public string $businessKey;
-    public ?string $caseInstanceId;
-    public bool $ended;
-    public bool $suspended;
-    public ?string $tenantId;
-    protected $processDefinition;
-    protected $parentProcessInstance;
-
     public static function find(string $id): self
     {
-        $response = self::request()->get("process-instance/$id");
+        $response = self::make()->get("process-instance/$id");
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        return self::fromResponse($response->json());
-    }
-
-    public static function fromResponse(array $data)
-    {
-        return new self($data);
-    }
-
-    public function processDefinition(): ?ProcessDefinition
-    {
-        $id = $key = null;
-        if (! $this->processDefinition) {
-            $id = $this->processDefinitionId ?? $this->definitionId ?? null;
-
-            if (! $id) {
-                $key = DB::table('camunda_task')
-                    ->where('process_instance_id', $this->id)
-                    ->value('process_definition_key');
-            }
-
-            if ($id) {
-                $this->processDefinition = (new ProcessDefinition($id))->fetch();
-            } elseif ($key) {
-                $this->processDefinition = ProcessDefinition::byKey($key)->fetch();
-            }
-        }
-
-        return $this->processDefinition;
-    }
-
-    public function parent()
-    {
-        if ($this->parentProcessInstance === null) {
-            $url = 'history/process-instance?subProcessInstanceId='.$this->id;
-            $result = Arr::first($this->get($url));
-
-            if ($result !== null) {
-                $this->parentProcessInstance = new ProcessInstanceHistory($result->id, $result);
-            }
-        }
-
-        return $this->parentProcessInstance;
+        return new \Laravolt\Camunda\Dto\ProcessInstance($response->json());
     }
 
     public function currentTask()
@@ -80,7 +28,7 @@ class ProcessInstance extends CamundaModel
         return $tasks[0] ?? null;
     }
 
-    public function tasks(array $whitelist = [])
+    public function tasks(array $whitelist = []): array
     {
         $url = 'task/?processInstanceId='.$this->id;
 
@@ -116,7 +64,7 @@ class ProcessInstance extends CamundaModel
         return $data;
     }
 
-    public function setVariable($key, $value, $type = 'String')
+    public function setVariable($key, $value, $type = 'String'): void
     {
         $this->put(
             'variables/'.$key,
@@ -128,10 +76,10 @@ class ProcessInstance extends CamundaModel
         );
     }
 
-    public function setVariables(array $modifications, array $deletions = [])
+    public function setVariables(array $modifications, array $deletions = []): void
     {
-        $modifications = $this->formatVariables($modifications);
-        $deletions = $this->formatVariables($deletions);
+        $modifications = self::formatVariables($modifications);
+        $deletions = self::formatVariables($deletions);
 
         $this->post(
             'variables',

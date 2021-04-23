@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Laravolt\Camunda\Models;
+namespace Laravolt\Camunda\Http;
 
+use Laravolt\Camunda\Dto\ProcessInstance;
 use Laravolt\Camunda\Exceptions\InvalidArgumentException;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 
-class ProcessDefinition extends CamundaModel
+class ProcessDefinitionClient extends CamundaClient
 {
     public string $key;
     public string $category;
@@ -23,35 +24,30 @@ class ProcessDefinition extends CamundaModel
     public ?string $historyTimeToLive;
     public bool $startableInTasklist;
 
-    public static function fromResponse(array $data)
-    {
-        return new self($data);
-    }
-
-    public function start(array $variables = [], string $businessKey = null): ProcessInstance
+    public static function start(string $id, array $variables = [], string $businessKey = null): ProcessInstance
     {
         // At least one value must be set...
         if (empty($variables)) {
             throw new InvalidArgumentException('Cannot start process instance with empty variables');
         }
 
-        $payload = ['variables' => $this->formatVariables($variables)];
+        $payload = ['variables' => self::formatVariables($variables)];
         if ($businessKey) {
             $payload['businessKey'] = $businessKey;
         }
-        $response = self::request()->asJson()->post("process-definition/{$this->id}/start", $payload);
+        $response = self::make()->asJson()->post("process-definition/{$id}/start", $payload);
 
         return new ProcessInstance($response->json());
     }
 
     public function xml()
     {
-        return self::request()->get("process-definition/{$this->id}/xml")->json('bpmn20Xml');
+        return self::make()->get("process-definition/{$this->id}/xml")->json('bpmn20Xml');
     }
 
     public static function getList(): array
     {
-        $response = self::request()->get("process-definition");
+        $response = self::make()->get("process-definition");
         $processDefinition = [];
         foreach ($response->json() as $res) {
             $processDefinition[] = self::fromResponse($res);
@@ -62,7 +58,7 @@ class ProcessDefinition extends CamundaModel
 
     public static function find(string $id): self
     {
-        $response = self::request()->get("process-definition/$id");
+        $response = self::make()->get("process-definition/$id");
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
@@ -71,15 +67,15 @@ class ProcessDefinition extends CamundaModel
         return self::fromResponse($response->json());
     }
 
-    public static function findByKey(string $key): self
+    public static function findByKey(string $key): \Laravolt\Camunda\Dto\ProcessDefinition
     {
-        $response = self::request()->get("process-definition/key/$key");
+        $response = self::make()->get("process-definition/key/$key");
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        return self::fromResponse($response->json());
+        return new \Laravolt\Camunda\Dto\ProcessDefinition($response->json());
     }
 
     public function getXml()

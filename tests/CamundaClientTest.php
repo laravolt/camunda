@@ -2,7 +2,7 @@
 
 namespace Laravolt\Camunda\Tests;
 
-use Laravolt\Camunda\CamundaClient;
+use Laravolt\Camunda\Http\CamundaClient;
 
 class CamundaClientTest extends TestCase
 {

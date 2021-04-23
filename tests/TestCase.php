@@ -2,7 +2,7 @@
 
 namespace Laravolt\Camunda\Tests;
 
-use Laravolt\Camunda\Deployment;
+use Laravolt\Camunda\Http\DeploymentClient;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -23,11 +23,11 @@ class TestCase extends \Orchestra\Testbench\TestCase
     protected function deploySampleBpmn(): \Laravolt\Camunda\Dto\Deployment
     {
         $files = __DIR__.'/../resources/sample.bpmn';
-        return Deployment::create('test', $files);
+        return DeploymentClient::create('test', $files);
     }
 
     protected function undeploySampleBpmn()
     {
-        Deployment::truncate(true);
+        DeploymentClient::truncate(true);
     }
 }
