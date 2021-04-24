@@ -49,20 +49,9 @@ class ProcessDefinitionClient extends CamundaClient
         return $processDefinition;
     }
 
-    public static function find(string $id): ProcessDefinition
+    public static function find(...$args): ProcessDefinition
     {
-        $response = self::make()->get("process-definition/$id");
-
-        if ($response->status() === 404) {
-            throw new ObjectNotFoundException($response->json('message'));
-        }
-
-        return new ProcessDefinition($response->json());
-    }
-
-    public static function findByKey(string $key): ProcessDefinition
-    {
-        $response = self::make()->get("process-definition/key/$key");
+        $response = self::make()->get(self::makeIdentifierPath('process-definition/{identifier}', $args));
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));

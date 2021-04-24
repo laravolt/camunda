@@ -29,7 +29,7 @@ class ProcessDefinitionTest extends TestCase
     public function test_it_cannot_start_with_empty_variables(): void
     {
         $this->deploySampleBpmn();
-        $processDefinition = ProcessDefinitionClient::findByKey('process_1');
+        $processDefinition = ProcessDefinitionClient::find(key: 'process_1');
 
         $variables = [];
         $businessKey = 'key-1';
@@ -50,27 +50,37 @@ class ProcessDefinitionTest extends TestCase
     {
         $this->deploySampleBpmn();
         $processDefinitions = ProcessDefinitionClient::get();
-        $processDefinition = ProcessDefinitionClient::find($processDefinitions[0]->id);
+        $processDefinition = ProcessDefinitionClient::find(id: $processDefinitions[0]->id);
         $this->assertNotNull($processDefinition);
     }
 
     public function test_it_cannot_find_by_invalid_id(): void
     {
         $this->expectException(ObjectNotFoundException::class);
-        ProcessDefinitionClient::find('invalid-id');
+        ProcessDefinitionClient::find(id: 'invalid-id');
     }
 
     public function test_it_can_find_by_key(): void
     {
         $this->deploySampleBpmn();
-        $processDefinition = ProcessDefinitionClient::findByKey('process_1');
+        $processDefinition = ProcessDefinitionClient::find(key: 'process_1');
         $this->assertInstanceOf(ProcessDefinition::class, $processDefinition);
     }
 
     public function test_it_cannot_find_by_invalid_key(): void
     {
         $this->expectException(ObjectNotFoundException::class);
-        ProcessDefinitionClient::findByKey('invalid-key');
+        ProcessDefinitionClient::find(key: 'invalid-key');
+    }
+
+    public function test_it_can_find_by_key_and_tenant_id(): void
+    {
+        $tenantId = 'tenant-1';
+        config()->set('services.camunda.tenant_id', $tenantId);
+        $this->deploySampleBpmn();
+
+        $processDefinition = ProcessDefinitionClient::find(key: 'process_1', tenantId: $tenantId);
+        $this->assertEquals($tenantId, $processDefinition->tenantId);
     }
 
     public function test_it_can_get_xml_by_id(): void
