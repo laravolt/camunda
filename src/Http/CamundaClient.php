@@ -26,7 +26,7 @@ class CamundaClient
             }
         }
 
-        if (!$identifier) {
+        if (! $identifier) {
             throw new InvalidArgumentException('');
         }
 
