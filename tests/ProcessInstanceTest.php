@@ -2,9 +2,6 @@
 
 namespace Laravolt\Camunda\Tests;
 
-use Laravolt\Camunda\Dto\ProcessDefinition;
-use Laravolt\Camunda\Dto\ProcessInstance;
-use Laravolt\Camunda\Exceptions\InvalidArgumentException;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
 use Laravolt\Camunda\Http\ProcessInstanceClient;

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Laravolt\Camunda\Http;
 
-use GuzzleHttp\Exception\ClientException;
-use Illuminate\Support\Arr;
 use Laravolt\Camunda\Dto\ProcessInstance;
 use Laravolt\Camunda\Dto\Task;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
