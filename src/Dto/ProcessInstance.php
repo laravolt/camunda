@@ -14,7 +14,7 @@ class ProcessInstance extends DataTransferObject
 
     public string|null $tenantId;
 
-    public string $businessKey;
+    public string|null $businessKey;
 
     public array $links;
 

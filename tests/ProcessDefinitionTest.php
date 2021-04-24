@@ -5,7 +5,6 @@ namespace Laravolt\Camunda\Tests;
 use Laravolt\Camunda\Dto\ProcessDefinition;
 use Laravolt\Camunda\Exceptions\InvalidArgumentException;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
-use Laravolt\Camunda\Http\DeploymentClient;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
 
 class ProcessDefinitionTest extends TestCase
@@ -18,11 +17,11 @@ class ProcessDefinitionTest extends TestCase
     public function test_it_can_start_new_process_instance(): void
     {
         $this->deploySampleBpmn();
-        $processDefinition = ProcessDefinitionClient::findByKey('process_1');
 
         $variables = ['title' => ['value' => 'Sample Title', 'type' => 'string']];
         $businessKey = 'key-1';
-        $processInstance = ProcessDefinitionClient::start($processDefinition->id, $variables, $businessKey);
+        $processInstance =
+            ProcessDefinitionClient::start(key: 'process_1', variables: $variables, businessKey: $businessKey);
 
         $this->assertIsString($processInstance->id);
     }

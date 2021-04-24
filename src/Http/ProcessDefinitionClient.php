@@ -11,8 +11,11 @@ use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 
 class ProcessDefinitionClient extends CamundaClient
 {
-    public static function start(string $id, array $variables = [], string $businessKey = null): ProcessInstance
+    public static function start(...$args): ProcessInstance
     {
+        $variables = $args['variables'] ?? [];
+        $businessKey = $args['businessKey'] ?? null;
+
         // At least one value must be set...
         if (empty($variables)) {
             throw new InvalidArgumentException('Cannot start process instance with empty variables');
@@ -22,20 +25,16 @@ class ProcessDefinitionClient extends CamundaClient
         if ($businessKey) {
             $payload['businessKey'] = $businessKey;
         }
-        $response = self::make()->asJson()->post("process-definition/{$id}/start", $payload);
+
+        $path = self::makeIdentifierPath("process-definition/{identifier}/start", $args);
+        $response = self::make()->asJson()->post($path, $payload);
 
         return new ProcessInstance($response->json());
     }
 
-    public static function xml(string $id = null, string $key = null): string
+    public static function xml(...$args): string
     {
-        if ($id) {
-            $path = "process-definition/$id/xml";
-        } elseif ($key) {
-            $path = "process-definition/key/$key/xml";
-        } else {
-            throw new InvalidArgumentException('Missing required parameter :id or :key');
-        }
+        $path = self::makeIdentifierPath(path: 'process-definition/{identifier}/xml', args: $args);
 
         return self::make()->get($path)->json('bpmn20Xml');
     }
