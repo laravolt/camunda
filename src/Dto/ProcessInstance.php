@@ -14,11 +14,11 @@ class ProcessInstance extends DataTransferObject
 
     public string|null $tenantId;
 
+    public string $businessKey;
+
     public array $links;
 
     public string $definitionId;
-
-    public string $businessKey;
 
     public ?string $caseInstanceId;
 

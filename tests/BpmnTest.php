@@ -1,9 +1,8 @@
 <?php
 
-namespace Laravolt\Camunda\Tests\Models;
+namespace Laravolt\Camunda\Tests;
 
 use Laravolt\Camunda\BpmnReader;
-use Laravolt\Camunda\Tests\TestCase;
 
 class BpmnTest extends TestCase
 {
@@ -12,7 +11,7 @@ class BpmnTest extends TestCase
      */
     public function it_can_parse_form_definition(): void
     {
-        $file = __DIR__.'/../../resources/rekrutmen-sederhana.bpmn';
+        $file = __DIR__.'/../resources/rekrutmen-sederhana.bpmn';
         $reader = new BpmnReader($file);
         $forms = $reader->getForms();
 
@@ -24,7 +23,7 @@ class BpmnTest extends TestCase
      */
     public function it_can_handle_bpmn_without_form_definition(): void
     {
-        $file = __DIR__.'/../../resources/sample.bpmn';
+        $file = __DIR__.'/../resources/sample.bpmn';
         $reader = new BpmnReader($file);
         $forms = $reader->getForms();
 

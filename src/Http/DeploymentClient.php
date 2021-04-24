@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Laravolt\Camunda\Http;
 
+use Laravolt\Camunda\Dto\Deployment;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Exceptions\ParseException;
 
 class DeploymentClient extends CamundaClient
 {
-    public static function create(string $name, string|array $bpmnFiles): \Laravolt\Camunda\Dto\Deployment
+    public static function create(string $name, string|array $bpmnFiles): Deployment
     {
         $multipart = [
             ['name' => 'deployment-name', 'contents' => $name],
@@ -36,10 +37,10 @@ class DeploymentClient extends CamundaClient
             throw new ParseException($response->json('message'));
         }
 
-        return new \Laravolt\Camunda\Dto\Deployment($response->json());
+        return new Deployment($response->json());
     }
 
-    public static function find(string $id): \Laravolt\Camunda\Dto\Deployment
+    public static function find(string $id): Deployment
     {
         $response = self::make()->get("deployment/$id");
 
@@ -47,7 +48,7 @@ class DeploymentClient extends CamundaClient
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        return new \Laravolt\Camunda\Dto\Deployment($response->json());
+        return new Deployment($response->json());
     }
 
     public static function get(): array
@@ -55,7 +56,7 @@ class DeploymentClient extends CamundaClient
         $response = self::make()->get('deployment');
         $result = [];
         foreach ($response->json() as $data) {
-            $result[] = new \Laravolt\Camunda\Dto\Deployment($data);
+            $result[] = new Deployment($data);
         }
 
         return $result;

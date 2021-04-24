@@ -1,11 +1,10 @@
 <?php
 
-namespace Laravolt\Camunda\Tests\Models;
+namespace Laravolt\Camunda\Tests;
 
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Exceptions\ParseException;
 use Laravolt\Camunda\Http\DeploymentClient;
-use Laravolt\Camunda\Tests\TestCase;
 
 class DeploymentTest extends TestCase
 {
@@ -17,7 +16,7 @@ class DeploymentTest extends TestCase
     /** @test */
     public function it_can_deploy_bpmn(): void
     {
-        $files = __DIR__.'/../../resources/sample.bpmn';
+        $files = __DIR__.'/../resources/sample.bpmn';
         $deployment = DeploymentClient::create('test', $files);
 
         $this->assertEquals('test', $deployment->name);
@@ -28,7 +27,7 @@ class DeploymentTest extends TestCase
     {
         config()->set('services.camunda.tenant_id', 'sample-tenant');
 
-        $files = __DIR__.'/../../resources/sample.bpmn';
+        $files = __DIR__.'/../resources/sample.bpmn';
         $deployment = DeploymentClient::create('test', $files);
 
         $this->assertEquals('test', $deployment->name);
@@ -38,8 +37,8 @@ class DeploymentTest extends TestCase
     public function it_can_deploy_multiple_bpmn(): void
     {
         $files = [
-            __DIR__.'/../../resources/sample.bpmn',
-            __DIR__.'/../../resources/sample2.bpmn',
+            __DIR__.'/../resources/sample.bpmn',
+            __DIR__.'/../resources/sample2.bpmn',
         ];
         $deployment = DeploymentClient::create('test', $files);
 
@@ -51,7 +50,7 @@ class DeploymentTest extends TestCase
     {
         $this->expectException(ParseException::class);
 
-        $files = __DIR__.'/../../resources/invalid.bpmn';
+        $files = __DIR__.'/../resources/invalid.bpmn';
         DeploymentClient::create('test', $files);
     }
 
@@ -60,7 +59,7 @@ class DeploymentTest extends TestCase
      */
     public function it_can_get_deployment_by_id(): void
     {
-        $files = __DIR__.'/../../resources/sample.bpmn';
+        $files = __DIR__.'/../resources/sample.bpmn';
         $deployment1 = DeploymentClient::create('test', $files);
 
         $deployment2 = DeploymentClient::find($deployment1->id);
@@ -82,8 +81,8 @@ class DeploymentTest extends TestCase
      */
     public function it_can_get_list_deployment(): void
     {
-        DeploymentClient::create('deployment1', __DIR__.'/../../resources/sample.bpmn');
-        DeploymentClient::create('deployment2', __DIR__.'/../../resources/sample2.bpmn');
+        DeploymentClient::create('deployment1', __DIR__.'/../resources/sample.bpmn');
+        DeploymentClient::create('deployment2', __DIR__.'/../resources/sample2.bpmn');
 
         $deployments = DeploymentClient::get();
         $this->assertCount(2, $deployments);
@@ -94,7 +93,7 @@ class DeploymentTest extends TestCase
      */
     public function it_can_delete_deployment(): void
     {
-        $deployment = DeploymentClient::create('deployment1', __DIR__.'/../../resources/sample.bpmn');
+        $deployment = DeploymentClient::create('deployment1', __DIR__.'/../resources/sample.bpmn');
         $deleted = DeploymentClient::delete($deployment->id);
 
         $this->assertTrue($deleted);
@@ -121,8 +120,8 @@ class DeploymentTest extends TestCase
      */
     public function it_can_truncate_deployment(): void
     {
-        DeploymentClient::create('deployment1', __DIR__.'/../../resources/sample.bpmn');
-        DeploymentClient::create('deployment2', __DIR__.'/../../resources/sample2.bpmn');
+        DeploymentClient::create('deployment1', __DIR__.'/../resources/sample.bpmn');
+        DeploymentClient::create('deployment2', __DIR__.'/../resources/sample2.bpmn');
 
         DeploymentClient::truncate();
 

@@ -28,16 +28,9 @@ class ProcessInstanceClient extends CamundaClient
         return $tasks[0] ?? null;
     }
 
-    public function tasks(array $whitelist = []): array
+    public static function tasks(string $processInstanceId): array
     {
-        $url = 'task/?processInstanceId='.$this->id;
-
-        if (! empty($whitelist)) {
-            $whitelist = implode(',', $whitelist);
-            $url .= '&taskDefinitionKeyIn='.$whitelist;
-        }
-
-        $tasks = $this->request()->get($url)->json();
+        $tasks = self::make()->get("task/?processInstanceId=$processInstanceId")->json();
 
         $data = [];
         foreach ($tasks as $task) {
@@ -49,11 +42,9 @@ class ProcessInstanceClient extends CamundaClient
         return $data;
     }
 
-    public function completedTasks()
+    public function completedTasks(string $processInstanceId)
     {
-        $url = 'history/task/?processInstanceId='.$this->id;
-
-        $tasks = self::request()->get($url)->json();
+        $tasks = self::make()->get("history/task/?processInstanceId=$processInstanceId")->json();
         $data = [];
         foreach ($tasks as $task) {
             $task = new TaskHistory($task);
