@@ -45,7 +45,7 @@ class CamundaClient
                 $type = $map[$key] ?? 'String';
 
                 $item = match ($type) {
-                    'Boolean' => (bool)$item,
+                    'Boolean' => (bool) $item,
                     default => $item
                 };
 

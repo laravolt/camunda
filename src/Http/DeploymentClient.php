@@ -26,7 +26,7 @@ class DeploymentClient extends CamundaClient
         }
 
         $request = self::make()->withOptions(['multipart' => $multipart]);
-        foreach ((array)$bpmnFiles as $bpmn) {
+        foreach ((array) $bpmnFiles as $bpmn) {
             $filename = pathinfo($bpmn)['basename'];
             $request->attach($filename, file_get_contents($bpmn), $filename);
         }

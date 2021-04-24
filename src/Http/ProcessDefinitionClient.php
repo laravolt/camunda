@@ -26,7 +26,7 @@ class ProcessDefinitionClient extends CamundaClient
             $payload['businessKey'] = $businessKey;
         }
 
-        $path = self::makeIdentifierPath("process-definition/{identifier}/start", $args);
+        $path = self::makeIdentifierPath('process-definition/{identifier}/start', $args);
         $response = self::make()->asJson()->post($path, $payload);
 
         return new ProcessInstance($response->json());
@@ -42,7 +42,7 @@ class ProcessDefinitionClient extends CamundaClient
     public static function get(): array
     {
         $processDefinition = [];
-        foreach (self::make()->get("process-definition")->json() as $res) {
+        foreach (self::make()->get('process-definition')->json() as $res) {
             $processDefinition[] = new ProcessDefinition($res);
         }
 
