@@ -14,7 +14,7 @@ class ProcessInstanceTest extends TestCase
         $this->deploySampleBpmn();
     }
 
-    public function test_get_process_instance()
+    public function test_find_by_id_or_key()
     {
         $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
         $processInstance1 = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);

@@ -14,7 +14,7 @@ class ProcessDefinitionTest extends TestCase
         $this->undeploySampleBpmn();
     }
 
-    public function test_it_can_start_new_process_instance(): void
+    public function test_start_new_process_instance(): void
     {
         $this->deploySampleBpmn();
 
@@ -26,7 +26,7 @@ class ProcessDefinitionTest extends TestCase
         $this->assertIsString($processInstance->id);
     }
 
-    public function test_it_cannot_start_with_empty_variables(): void
+    public function test_start_with_empty_variables(): void
     {
         $this->deploySampleBpmn();
         $processDefinition = ProcessDefinitionClient::find(key: 'process_1');
@@ -38,7 +38,7 @@ class ProcessDefinitionTest extends TestCase
         ProcessDefinitionClient::start($processDefinition->id, $variables, $businessKey);
     }
 
-    public function test_it_can_get_list_process_definition(): void
+    public function test_get_list_process_definition(): void
     {
         $this->deploySampleBpmn();
         $processDefinitions = ProcessDefinitionClient::get();
@@ -46,7 +46,7 @@ class ProcessDefinitionTest extends TestCase
         $this->assertInstanceOf(ProcessDefinition::class, $processDefinitions[0]);
     }
 
-    public function test_it_can_find_by_id(): void
+    public function test_find_by_id(): void
     {
         $this->deploySampleBpmn();
         $processDefinitions = ProcessDefinitionClient::get();
@@ -58,26 +58,26 @@ class ProcessDefinitionTest extends TestCase
         $this->assertNotNull($processDefinition);
     }
 
-    public function test_it_cannot_find_by_invalid_id(): void
+    public function test_find_by_invalid_id(): void
     {
         $this->expectException(ObjectNotFoundException::class);
         ProcessDefinitionClient::find(id: 'invalid-id');
     }
 
-    public function test_it_can_find_by_key(): void
+    public function test_find_by_key(): void
     {
         $this->deploySampleBpmn();
         $processDefinition = ProcessDefinitionClient::find(key: 'process_1');
         $this->assertInstanceOf(ProcessDefinition::class, $processDefinition);
     }
 
-    public function test_it_cannot_find_by_invalid_key(): void
+    public function test_find_by_invalid_key(): void
     {
         $this->expectException(ObjectNotFoundException::class);
         ProcessDefinitionClient::find(key: 'invalid-key');
     }
 
-    public function test_it_can_find_by_key_and_tenant_id(): void
+    public function test_find_by_key_and_tenant_id(): void
     {
         $tenantId = 'tenant-1';
         config()->set('services.camunda.tenant_id', $tenantId);
@@ -87,7 +87,7 @@ class ProcessDefinitionTest extends TestCase
         $this->assertEquals($tenantId, $processDefinition->tenantId);
     }
 
-    public function test_it_can_get_xml_by_id(): void
+    public function test_find_xml_by_id(): void
     {
         $this->deploySampleBpmn();
         $processDefinitions = ProcessDefinitionClient::get();
@@ -96,14 +96,14 @@ class ProcessDefinitionTest extends TestCase
         $this->assertNotNull($xml);
     }
 
-    public function test_it_can_get_xml_by_key(): void
+    public function test_find_xml_by_key(): void
     {
         $this->deploySampleBpmn();
         $xml = ProcessDefinitionClient::xml(key: 'process_1');
         $this->assertNotNull($xml);
     }
 
-    public function test_it_cannot_get_xml_without_id_or_key(): void
+    public function test_find_xml_without_id_or_key(): void
     {
         $this->expectException(InvalidArgumentException::class);
         ProcessDefinitionClient::xml();

@@ -6,10 +6,7 @@ use Laravolt\Camunda\Http\CamundaClient;
 
 class CamundaClientTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function it_can_call_valid_endpoint(): void
+    public function test_call_valid_endpoint(): void
     {
         $response = CamundaClient::make()->get('version');
 
@@ -17,10 +14,7 @@ class CamundaClientTest extends TestCase
         $this->assertInstanceOf(\stdClass::class, $response->object());
     }
 
-    /**
-     * @test
-     */
-    public function it_cannot_call_invalid_endpoint(): void
+    public function test_call_invalid_endpoint(): void
     {
         $response = CamundaClient::make()->get('invalid-endpoint');
 

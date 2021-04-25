@@ -6,10 +6,7 @@ use Laravolt\Camunda\BpmnReader;
 
 class BpmnTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function it_can_parse_form_definition(): void
+    public function test_parse_form_definition(): void
     {
         $file = __DIR__.'/../resources/rekrutmen-sederhana.bpmn';
         $reader = new BpmnReader($file);
@@ -18,10 +15,7 @@ class BpmnTest extends TestCase
         $this->assertNotEmpty($forms);
     }
 
-    /**
-     * @test
-     */
-    public function it_can_handle_bpmn_without_form_definition(): void
+    public function test_parse_empty_form_definition(): void
     {
         $file = __DIR__.'/../resources/sample.bpmn';
         $reader = new BpmnReader($file);

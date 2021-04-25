@@ -13,8 +13,7 @@ class DeploymentTest extends TestCase
         DeploymentClient::truncate();
     }
 
-    /** @test */
-    public function it_can_deploy_bpmn(): void
+    public function test_deploy_bpmn(): void
     {
         $files = __DIR__.'/../resources/sample.bpmn';
         $deployment = DeploymentClient::create('test', $files);
@@ -22,8 +21,7 @@ class DeploymentTest extends TestCase
         $this->assertEquals('test', $deployment->name);
     }
 
-    /** @test */
-    public function it_can_deploy_bpmn_with_tenant_id(): void
+    public function test_deploy_bpmn_with_tenant_id(): void
     {
         config()->set('services.camunda.tenant_id', 'sample-tenant');
 
@@ -33,8 +31,7 @@ class DeploymentTest extends TestCase
         $this->assertEquals('test', $deployment->name);
     }
 
-    /** @test */
-    public function it_can_deploy_multiple_bpmn(): void
+    public function test_deploy_multiple_bpmn(): void
     {
         $files = [
             __DIR__.'/../resources/sample.bpmn',
@@ -45,8 +42,7 @@ class DeploymentTest extends TestCase
         $this->assertEquals('test', $deployment->name);
     }
 
-    /** @test */
-    public function it_cannot_deploy_invalid_bpmn(): void
+    public function test_deploy_invalid_bpmn(): void
     {
         $this->expectException(ParseException::class);
 
@@ -54,10 +50,7 @@ class DeploymentTest extends TestCase
         DeploymentClient::create('test', $files);
     }
 
-    /**
-     * @test
-     */
-    public function it_can_get_deployment_by_id(): void
+    public function test_get_deployment_by_id(): void
     {
         $files = __DIR__.'/../resources/sample.bpmn';
         $deployment1 = DeploymentClient::create('test', $files);
@@ -66,20 +59,14 @@ class DeploymentTest extends TestCase
         $this->assertEquals($deployment1->id, $deployment2->id);
     }
 
-    /**
-     * @test
-     */
-    public function it_cannot_get_deployment_by_invalid_id(): void
+    public function test_get_deployment_by_invalid_id(): void
     {
         $this->expectException(ObjectNotFoundException::class);
 
         DeploymentClient::find('some-invalid-id');
     }
 
-    /**
-     * @test
-     */
-    public function it_can_get_list_deployment(): void
+    public function test_get_list_deployment(): void
     {
         DeploymentClient::create('deployment1', __DIR__.'/../resources/sample.bpmn');
         DeploymentClient::create('deployment2', __DIR__.'/../resources/sample2.bpmn');
@@ -88,10 +75,7 @@ class DeploymentTest extends TestCase
         $this->assertCount(2, $deployments);
     }
 
-    /**
-     * @test
-     */
-    public function it_can_delete_deployment(): void
+    public function test_delete_deployment(): void
     {
         $deployment = DeploymentClient::create('deployment1', __DIR__.'/../resources/sample.bpmn');
         $deleted = DeploymentClient::delete($deployment->id);
@@ -99,10 +83,7 @@ class DeploymentTest extends TestCase
         $this->assertTrue($deleted);
     }
 
-    /**
-     * @test
-     */
-    public function it_cannot_delete_invalid_deployment(): void
+    public function test_delete_invalid_deployment(): void
     {
         $this->expectException(ObjectNotFoundException::class);
 
@@ -115,10 +96,7 @@ class DeploymentTest extends TestCase
         DeploymentClient::delete($deployment->id);
     }
 
-    /**
-     * @test
-     */
-    public function it_can_truncate_deployment(): void
+    public function test_truncate_deployment(): void
     {
         DeploymentClient::create('deployment1', __DIR__.'/../resources/sample.bpmn');
         DeploymentClient::create('deployment2', __DIR__.'/../resources/sample2.bpmn');
