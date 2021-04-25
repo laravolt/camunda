@@ -22,15 +22,15 @@ class Deployment extends DataTransferObject
     #[CastWith(CarbonCaster::class)]
     public Carbon $deploymentTime;
 
-    public ?array $processDefinitions = [];
+    public ?array $processDefinitions;
 
-    public array|null $links;
+    public ?array $links;
 
-    public array|null $deployedProcessDefinitions;
+    public ?array $deployedProcessDefinitions;
 
-    public array|null $deployedCaseDefinitions;
+    public ?array $deployedCaseDefinitions;
 
-    public array|null $deployedDecisionDefinitions;
+    public ?array $deployedDecisionDefinitions;
 
-    public array|null $deployedDecisionRequirementsDefinitions;
+    public ?array $deployedDecisionRequirementsDefinitions;
 }

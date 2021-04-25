@@ -50,6 +50,10 @@ class ProcessDefinitionTest extends TestCase
     {
         $this->deploySampleBpmn();
         $processDefinitions = ProcessDefinitionClient::get();
+
+        $processDefinition = ProcessDefinitionClient::find($processDefinitions[0]->id);
+        $this->assertNotNull($processDefinition);
+
         $processDefinition = ProcessDefinitionClient::find(id: $processDefinitions[0]->id);
         $this->assertNotNull($processDefinition);
     }

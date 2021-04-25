@@ -2,6 +2,7 @@
 
 namespace Laravolt\Camunda\Tests;
 
+use Laravolt\Camunda\Exceptions\CamundaException;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
 use Laravolt\Camunda\Http\ProcessInstanceClient;
@@ -15,7 +16,7 @@ class TaskTest extends TestCase
         $this->deploySampleBpmn();
     }
 
-    public function test_it_can_find_by_id()
+    public function test_find_by_id()
     {
         $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
         $processInstance = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
@@ -27,10 +28,28 @@ class TaskTest extends TestCase
         }
     }
 
-    public function test_it_can_handle_invalid_id()
+    public function test_handle_invalid_id()
     {
         $this->expectException(ObjectNotFoundException::class);
         TaskClient::find('invalid-id');
+    }
+
+    public function test_submit_form()
+    {
+        $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
+        $processInstance = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
+        $tasks = ProcessInstanceClient::tasks($processInstance->id);
+
+        foreach ($tasks as $task) {
+            $submitted = TaskClient::submit($task->id, ['foo' => 'bar']);
+            $this->assertTrue($submitted);
+        }
+    }
+
+    public function test_submit_form_with_invalid_id()
+    {
+        $this->expectException(CamundaException::class);
+        TaskClient::submit('invalid-id', ['foo' => 'bar']);
     }
 
     protected function tearDown(): void

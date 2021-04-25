@@ -17,6 +17,11 @@ class CamundaClient
 
     protected static function makeIdentifierPath(string $path, array $args): string
     {
+        // If no named parameters defined, we assume it is an ID
+        if (count($args) === 1 && isset($args[0])) {
+            $args['id'] = $args[0];
+        }
+
         $args += ['id' => false, 'key' => false, 'tenantId' => false];
         $identifier = $args['id'];
         if ($args['key']) {

@@ -19,7 +19,10 @@ class ProcessInstanceTest extends TestCase
         $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
         $processInstance1 = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
         $processInstance2 = ProcessInstanceClient::find(id: $processInstance1->id);
+        $processInstance3 = ProcessInstanceClient::find($processInstance1->id);
+
         $this->assertEquals($processInstance1->id, $processInstance2->id);
+        $this->assertEquals($processInstance2->id, $processInstance3->id);
     }
 
     public function test_get_tasks()
@@ -28,6 +31,14 @@ class ProcessInstanceTest extends TestCase
         $processInstance = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
         $tasks = ProcessInstanceClient::tasks($processInstance->id);
         $this->assertCount(1, $tasks);
+    }
+
+    public function test_get_completed_tasks()
+    {
+        $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
+        $processInstance = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
+        $completedTasks = ProcessInstanceClient::completedTasks($processInstance->id);
+        $this->assertCount(1, $completedTasks);
     }
 
     public function test_delete()

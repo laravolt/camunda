@@ -6,6 +6,7 @@ namespace Laravolt\Camunda\Http;
 
 use Laravolt\Camunda\Dto\ProcessInstance;
 use Laravolt\Camunda\Dto\Task;
+use Laravolt\Camunda\Dto\TaskHistory;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 
 class ProcessInstanceClient extends CamundaClient
@@ -28,6 +29,18 @@ class ProcessInstanceClient extends CamundaClient
         $data = [];
         foreach ($tasks as $task) {
             $data[] = new Task($task);
+        }
+
+        return $data;
+    }
+
+    public static function completedTasks(string $processInstanceId): array
+    {
+        $tasks = self::make()->get("history/task/?processInstanceId=$processInstanceId")->json();
+
+        $data = [];
+        foreach ($tasks as $task) {
+            $data[] = new TaskHistory($task);
         }
 
         return $data;
