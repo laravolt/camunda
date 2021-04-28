@@ -39,10 +39,10 @@ class ProcessDefinitionClient extends CamundaClient
         return self::make()->get($path)->json('bpmn20Xml');
     }
 
-    public static function get(): array
+    public static function get(array $parameters = []): array
     {
         $processDefinition = [];
-        foreach (self::make()->get('process-definition')->json() as $res) {
+        foreach (self::make()->get('process-definition', $parameters)->json() as $res) {
             $processDefinition[] = new ProcessDefinition($res);
         }
 

@@ -8,9 +8,20 @@ use Laravolt\Camunda\Dto\ProcessInstance;
 use Laravolt\Camunda\Dto\Task;
 use Laravolt\Camunda\Dto\TaskHistory;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
+use Spatie\DataTransferObject\DataTransferObject;
 
 class ProcessInstanceClient extends CamundaClient
 {
+    public static function get(array $parameters = []): array
+    {
+        $instances = [];
+        foreach (self::make()->get('process-instance', $parameters)->json() as $res) {
+            $instances[] = new ProcessInstance($res);
+        }
+
+        return $instances;
+    }
+
     public static function find(string $id): ProcessInstance
     {
         $response = self::make()->get("process-instance/$id");
@@ -44,6 +55,13 @@ class ProcessInstanceClient extends CamundaClient
         }
 
         return $data;
+    }
+
+    public static function variables(string $processInstanceId): array
+    {
+        $variables = self::make()->get("process-instance/$processInstanceId/variables")->json();
+
+        return $variables;
     }
 
     public static function delete(string $id): bool

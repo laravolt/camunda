@@ -21,9 +21,7 @@ class TaskClient extends CamundaClient
 
     public static function submit(string $id, array $variables): bool
     {
-        $payload['variables'] = collect($variables)->mapWithKeys(
-            fn ($value, $key) => [$key => ['value' => $value]]
-        );
+        $payload['variables'] = self::formatVariables($variables);
 
         $response = self::make()->asJson()->post("task/$id/submit-form", $payload);
 
