@@ -40,25 +40,6 @@ class CamundaClient
 
     protected static function formatVariables(array $data): array
     {
-        $map = [
-            'status_administrasi' => 'Boolean',
-            'lulus_wawancara' => 'Boolean',
-        ];
-
-        return collect($data)->transform(
-            function ($item, $key) use ($map) {
-                $type = $map[$key] ?? 'String';
-
-                $item = match ($type) {
-                    'Boolean' => (bool) $item,
-                    default => $item
-                };
-
-                return [
-                    'type' => $type,
-                    'value' => $item,
-                ];
-            }
-        )->toArray();
+        return $data;
     }
 }

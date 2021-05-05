@@ -7,6 +7,7 @@ namespace Laravolt\Camunda\Http;
 use Laravolt\Camunda\Dto\ProcessInstance;
 use Laravolt\Camunda\Dto\Task;
 use Laravolt\Camunda\Dto\TaskHistory;
+use Laravolt\Camunda\Dto\Variable;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Spatie\DataTransferObject\DataTransferObject;
 
@@ -61,7 +62,9 @@ class ProcessInstanceClient extends CamundaClient
     {
         $variables = self::make()->get("process-instance/$processInstanceId/variables")->json();
 
-        return $variables;
+        return collect($variables)->map(
+            fn($data, $name) => new Variable(name: $name, value: $data['value'], type: $data['type'])
+        )->values()->toArray();
     }
 
     public static function delete(string $id): bool

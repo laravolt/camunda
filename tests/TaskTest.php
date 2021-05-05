@@ -41,7 +41,7 @@ class TaskTest extends TestCase
         $tasks = ProcessInstanceClient::tasks($processInstance->id);
 
         foreach ($tasks as $task) {
-            $submitted = TaskClient::submit($task->id, ['foo' => 'bar']);
+            $submitted = TaskClient::submit($task->id, ['email' => ['value' => 'uyab.exe@gmail.com', 'type' => 'string']]);
             $this->assertTrue($submitted);
         }
     }

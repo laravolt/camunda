@@ -23,7 +23,7 @@ class TaskClient extends CamundaClient
     {
         $payload['variables'] = self::formatVariables($variables);
 
-        $response = self::make()->asJson()->post("task/$id/submit-form", $payload);
+        $response = self::make()->post("task/$id/submit-form", $payload);
 
         if ($response->status() === 204) {
             return true;

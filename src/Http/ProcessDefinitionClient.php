@@ -27,7 +27,7 @@ class ProcessDefinitionClient extends CamundaClient
         }
 
         $path = self::makeIdentifierPath('process-definition/{identifier}/start', $args);
-        $response = self::make()->asJson()->post($path, $payload);
+        $response = self::make()->post($path, $payload);
 
         return new ProcessInstance($response->json());
     }
