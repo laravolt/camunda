@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Laravolt\Camunda\Dto;
 
+use Laravolt\Camunda\Dto\Casters\VariablesCaster;
+use Spatie\DataTransferObject\Attributes\CastWith;
 use Spatie\DataTransferObject\Attributes\Strict;
 use Spatie\DataTransferObject\DataTransferObject;
 
@@ -25,4 +27,8 @@ class ProcessInstance extends DataTransferObject
     public bool $ended;
 
     public bool $suspended;
+
+    /** @var \Laravolt\Camunda\Dto\Variable[]  */
+    #[CastWith(VariablesCaster::class, Variable::class)]
+    public array|null $variables;
 }

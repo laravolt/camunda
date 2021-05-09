@@ -9,7 +9,6 @@ use Laravolt\Camunda\Dto\Task;
 use Laravolt\Camunda\Dto\TaskHistory;
 use Laravolt\Camunda\Dto\Variable;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
-use Spatie\DataTransferObject\DataTransferObject;
 
 class ProcessInstanceClient extends CamundaClient
 {
@@ -48,23 +47,31 @@ class ProcessInstanceClient extends CamundaClient
 
     public static function completedTasks(string $processInstanceId): array
     {
-        $tasks = self::make()->get("history/task/?processInstanceId=$processInstanceId")->json();
+        $tasks = self::make()
+            ->get(
+                "history/task",
+                [
+                    'processInstanceId' => $processInstanceId,
+                    'finished' => true,
+                ]
+            )
+            ->json();
 
-        $data = [];
+        $data = collect();
         foreach ($tasks as $task) {
-            $data[] = new TaskHistory($task);
+            $data->push(new TaskHistory($task));
         }
 
-        return $data;
+        return $data->sortBy('startTime')->toArray();
     }
 
     public static function variables(string $processInstanceId): array
     {
         $variables = self::make()->get("process-instance/$processInstanceId/variables")->json();
 
-        return collect($variables)->map(
-            fn($data, $name) => new Variable(name: $name, value: $data['value'], type: $data['type'])
-        )->values()->toArray();
+        return collect($variables)->mapWithKeys(
+            fn ($data, $name) => [$name => new Variable(name: $name, value: $data['value'], type: $data['type'])]
+        )->toArray();
     }
 
     public static function delete(string $id): bool

@@ -37,9 +37,4 @@ class CamundaClient
 
         return str_replace('{identifier}', $identifier, $path);
     }
-
-    protected static function formatVariables(array $data): array
-    {
-        return $data;
-    }
 }
