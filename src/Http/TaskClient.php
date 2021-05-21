@@ -2,7 +2,9 @@
 
 namespace Laravolt\Camunda\Http;
 
+use Laravolt\Camunda\Dto\Casters\VariablesCaster;
 use Laravolt\Camunda\Dto\Task;
+use Laravolt\Camunda\Dto\Variable;
 use Laravolt\Camunda\Exceptions\CamundaException;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 
@@ -19,16 +21,21 @@ class TaskClient extends CamundaClient
         return new Task($response->json());
     }
 
-    public static function submit(string $id, array $variables): bool
+    public static function submit(string $id, array $variables, bool $withVariablesInReturn = true): bool|array
     {
-        $payload['variables'] = self::formatVariables($variables);
-
-        $response = self::make()->post("task/$id/submit-form", $payload);
+        $response = self::make()->post(
+            "task/$id/submit-form",
+            compact('variables', 'withVariablesInReturn')
+        );
 
         if ($response->status() === 204) {
             return true;
         }
 
-        throw new CamundaException($response->json('message'), $response->status());
+        if ($response->status() === 200) {
+            return (new VariablesCaster('array', Variable::class))->cast($response->json());
+        }
+
+        throw new CamundaException($response->body(), $response->status());
     }
 }

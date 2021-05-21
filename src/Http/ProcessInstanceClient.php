@@ -33,36 +33,53 @@ class ProcessInstanceClient extends CamundaClient
         return new ProcessInstance($response->json());
     }
 
+    /**
+     * @param  string  $processInstanceId
+     *
+     * @return Task[]
+     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
+     */
     public static function tasks(string $processInstanceId): array
     {
-        $tasks = self::make()->get("task/?processInstanceId=$processInstanceId")->json();
+        $response = self::make()->get("task/?processInstanceId=$processInstanceId");
 
         $data = [];
-        foreach ($tasks as $task) {
-            $data[] = new Task($task);
+        if ($response->successful()) {
+            foreach ($response->json() as $task) {
+                $data[] = new Task($task);
+            }
         }
 
         return $data;
     }
 
+    /**
+     * @param  string  $processInstanceId
+     *
+     * @return TaskHistory[]
+     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
+     */
     public static function completedTasks(string $processInstanceId): array
     {
-        $tasks = self::make()
+        $response = self::make()
             ->get(
                 "history/task",
                 [
                     'processInstanceId' => $processInstanceId,
                     'finished' => true,
                 ]
-            )
-            ->json();
+            );
 
-        $data = collect();
-        foreach ($tasks as $task) {
-            $data->push(new TaskHistory($task));
+        if ($response->successful()) {
+            $data = collect();
+            foreach ($response->json() as $task) {
+                $data->push(new TaskHistory($task));
+            }
+
+            return $data->sortBy('endTime')->toArray();
         }
 
-        return $data->sortBy('startTime')->toArray();
+        return [];
     }
 
     public static function variables(string $processInstanceId): array
