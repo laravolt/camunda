@@ -51,9 +51,9 @@ class DeploymentClient extends CamundaClient
         return new Deployment($response->json());
     }
 
-    public static function get(): array
+    public static function get(array $parameters = []): array
     {
-        $response = self::make()->get('deployment');
+        $response = self::make()->get('deployment', $parameters);
         $result = [];
         foreach ($response->json() as $data) {
             $result[] = new Deployment($data);

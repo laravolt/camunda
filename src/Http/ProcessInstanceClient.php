@@ -31,9 +31,9 @@ class ProcessInstanceClient extends CamundaClient
         return new ProcessInstance($response->json());
     }
 
-    public static function variables(string $processInstanceId): array
+    public static function variables(string $id): array
     {
-        $variables = self::make()->get("process-instance/$processInstanceId/variables")->json();
+        $variables = self::make()->get("process-instance/$id/variables")->json();
 
         return collect($variables)->mapWithKeys(
             fn ($data, $name) => [$name => new Variable(name: $name, value: $data['value'], type: $data['type'])]

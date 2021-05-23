@@ -27,9 +27,9 @@ class TaskClient extends CamundaClient
      * @return Task[]
      * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
      */
-    public static function getByProcessInstanceId(string $processInstanceId): array
+    public static function getByProcessInstanceId(string $id): array
     {
-        $response = self::make()->get("task?processInstanceId=$processInstanceId");
+        $response = self::make()->get("task?processInstanceId=$id");
 
         $data = [];
         if ($response->successful()) {
