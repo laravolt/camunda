@@ -21,16 +21,46 @@ class TaskClient extends CamundaClient
         return new Task($response->json());
     }
 
-    public static function submit(string $id, array $variables, bool $withVariablesInReturn = true): bool|array
+    /**
+     * @param  string  $processInstanceId
+     *
+     * @return Task[]
+     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
+     */
+    public static function getByProcessInstanceId(string $processInstanceId): array
+    {
+        $response = self::make()->get("task?processInstanceId=$processInstanceId");
+
+        $data = [];
+        if ($response->successful()) {
+            foreach ($response->json() as $task) {
+                $data[] = new Task($task);
+            }
+        }
+
+        return $data;
+    }
+
+    public static function submit(string $id, array $variables): bool
     {
         $response = self::make()->post(
             "task/$id/submit-form",
-            compact('variables', 'withVariablesInReturn')
+            compact('variables')
         );
 
         if ($response->status() === 204) {
             return true;
         }
+
+        throw new CamundaException($response->body(), $response->status());
+    }
+
+    public static function submitAndReturnVariables(string $id, array $variables): array
+    {
+        $response = self::make()->post(
+            "task/$id/submit-form",
+            ['variables' => $variables, 'withVariablesInReturn' => true]
+        );
 
         if ($response->status() === 200) {
             return (new VariablesCaster('array', Variable::class))->cast($response->json());

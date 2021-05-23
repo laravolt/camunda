@@ -47,31 +47,16 @@ class ProcessInstanceTest extends TestCase
         $this->assertCount(0, $processInstances);
     }
 
-    public function test_get_tasks()
-    {
-        $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
-        $processInstance = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
-        $tasks = ProcessInstanceClient::tasks($processInstance->id);
-        $this->assertCount(1, $tasks);
-    }
-
-    public function test_get_completed_tasks()
-    {
-        $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
-        $processInstance = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
-        $completedTasks = ProcessInstanceClient::completedTasks($processInstance->id);
-        $this->assertCount(1, $completedTasks);
-    }
-
     public function test_get_variables()
     {
         $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
         $processInstance = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
         $variables = ProcessInstanceClient::variables($processInstance->id);
+
         $this->assertCount(1, $variables);
-        $this->assertInstanceOf(Variable::class, $variables[0]);
-        $this->assertEquals('String', $variables[0]->type);
-        $this->assertEquals('Foo', $variables[0]->value);
+        $this->assertInstanceOf(Variable::class, $variables['title']);
+        $this->assertEquals('String', $variables['title']->type);
+        $this->assertEquals('Foo', $variables['title']->value);
     }
 
     public function test_delete()

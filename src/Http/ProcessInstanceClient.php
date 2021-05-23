@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Laravolt\Camunda\Http;
 
 use Laravolt\Camunda\Dto\ProcessInstance;
-use Laravolt\Camunda\Dto\Task;
-use Laravolt\Camunda\Dto\TaskHistory;
 use Laravolt\Camunda\Dto\Variable;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 
@@ -31,55 +29,6 @@ class ProcessInstanceClient extends CamundaClient
         }
 
         return new ProcessInstance($response->json());
-    }
-
-    /**
-     * @param  string  $processInstanceId
-     *
-     * @return Task[]
-     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
-     */
-    public static function tasks(string $processInstanceId): array
-    {
-        $response = self::make()->get("task/?processInstanceId=$processInstanceId");
-
-        $data = [];
-        if ($response->successful()) {
-            foreach ($response->json() as $task) {
-                $data[] = new Task($task);
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param  string  $processInstanceId
-     *
-     * @return TaskHistory[]
-     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
-     */
-    public static function completedTasks(string $processInstanceId): array
-    {
-        $response = self::make()
-            ->get(
-                "history/task",
-                [
-                    'processInstanceId' => $processInstanceId,
-                    'finished' => true,
-                ]
-            );
-
-        if ($response->successful()) {
-            $data = collect();
-            foreach ($response->json() as $task) {
-                $data->push(new TaskHistory($task));
-            }
-
-            return $data->sortBy('endTime')->toArray();
-        }
-
-        return [];
     }
 
     public static function variables(string $processInstanceId): array

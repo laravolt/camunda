@@ -25,7 +25,7 @@ class VariablesCaster implements Caster
         }
 
         throw new LogicException(
-            "Caster [ArrayCaster] may only be used to cast arrays or objects that implement ArrayAccess."
+            'Caster [ArrayCaster] may only be used to cast arrays or objects that implement ArrayAccess.'
         );
     }
 
