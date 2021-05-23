@@ -11,6 +11,7 @@ class CamundaClientTest extends TestCase
         $response = CamundaClient::make()->get('version');
 
         $this->assertEquals(200, $response->status());
+        $this->assertArrayHasKey('version', $response->json());
         $this->assertInstanceOf(\stdClass::class, $response->object());
     }
 
