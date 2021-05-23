@@ -1,2 +1,7 @@
 /vendor
+/reports
+clover.xml
 composer.lock
+.phpunit.result.cache
+.php_cs.cache
+.php-cs-fixer.cache

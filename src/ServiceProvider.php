@@ -1,15 +1,7 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Laravolt\Camunda;
 
-use Laravolt\Support\Base\BaseServiceProvider;
-
-class ServiceProvider extends BaseServiceProvider
+class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
-    public function getIdentifier()
-    {
-        return 'camunda';
-    }
 }

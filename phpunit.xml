@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         printerClass="Sempro\PHPUnitPrettyPrinter\PrettyPrinterForPhpUnit9"
+         colors="true"
+         bootstrap="vendor/autoload.php">
+    <coverage>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <exclude>
+            <file>src/ServiceProvider.php</file>
+        </exclude>
+    </coverage>
+    <testsuites>
+        <testsuite name="Laravaolt Camunda Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <env name="APP_NAME" value="Laravolt Camunda Package"/>
+        <env name="APP_ENV" value="test"/>
+        <env name="CAMUNDA_URL" value="http://localhost:8080/engine-rest/"/>
+    </php>
+
+</phpunit>
