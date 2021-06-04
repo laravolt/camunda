@@ -2,7 +2,7 @@
 
 namespace Laravolt\Camunda\Dto;
 
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Laravolt\Camunda\Dto\Casters\CarbonCaster;
 use Spatie\DataTransferObject\Attributes\CastWith;
 use Spatie\DataTransferObject\Attributes\Strict;

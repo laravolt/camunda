@@ -2,7 +2,7 @@
 
 namespace Laravolt\Camunda\Dto\Casters;
 
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Spatie\DataTransferObject\Caster;
 
 class CarbonCaster implements Caster
