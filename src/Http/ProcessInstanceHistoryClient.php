@@ -8,6 +8,7 @@ use Laravolt\Camunda\Dto\ProcessInstance;
 use Laravolt\Camunda\Dto\ProcessInstanceHistory;
 use Laravolt\Camunda\Dto\Variable;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
+use Spatie\DataTransferObject\DataTransferObject;
 
 class ProcessInstanceHistoryClient extends CamundaClient
 {
@@ -42,5 +43,14 @@ class ProcessInstanceHistoryClient extends CamundaClient
         }
 
         return new ProcessInstanceHistory($response->json());
+    }
+
+    public static function variables(string $id): array
+    {
+        $variables = self::make()->get("history/variable-instance", ['processInstanceId' => $id])->json();
+
+        return collect($variables)->mapWithKeys(
+            fn ($data) => [$data['name'] => new Variable(name: $data['name'], value: $data['value'], type: $data['type'])]
+        )->toArray();
     }
 }
