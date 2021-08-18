@@ -9,24 +9,26 @@ use Spatie\DataTransferObject\Caster;
 class VariablesCaster implements Caster
 {
     public function __construct(
-        private string $type,
+        private array $types,
         private string $itemType,
     ) {
     }
 
     public function cast(mixed $value): array|ArrayAccess
     {
-        if ($this->type === 'array') {
-            return $this->castArray($value);
-        }
+        foreach ($this->types as $type) {
+            if ($type === 'array') {
+                return $this->castArray($value);
+            }
 
-        if (is_subclass_of($this->type, ArrayAccess::class)) {
-            return $this->castArrayAccess($value);
-        }
+            if (is_subclass_of($type, ArrayAccess::class)) {
+                return $this->castArrayAccess($value);
+            }
 
-        throw new LogicException(
-            'Caster [ArrayCaster] may only be used to cast arrays or objects that implement ArrayAccess.'
-        );
+            throw new LogicException(
+                'Caster [ArrayCaster] may only be used to cast arrays or objects that implement ArrayAccess.'
+            );
+        }
     }
 
     private function castArray(mixed $value): array

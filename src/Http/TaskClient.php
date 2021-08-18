@@ -63,7 +63,7 @@ class TaskClient extends CamundaClient
         );
 
         if ($response->status() === 200) {
-            return (new VariablesCaster('array', Variable::class))->cast($response->json());
+            return (new VariablesCaster(['array'], Variable::class))->cast($response->json());
         }
 
         throw new CamundaException($response->body(), $response->status());
