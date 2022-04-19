@@ -10,10 +10,39 @@ use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 
 class ProcessInstanceClient extends CamundaClient
 {
-    public static function get(array $parameters = []): array
+    public static function get(array $variables = []): array
     {
+        /**
+         *  $variables = [
+         *       [
+         *          'name' => 'varname',
+         *          'operator' => "_eq_",
+         *          'value' => 'varvalue',
+         *       ],
+         *   ];
+         */
+
+        /**
+         * `operator` can only contain _eq_, _neq_, _gt_, _gte_, _lt_, _lte_
+         * Check Camunda documentation for more information
+         */
+
         $instances = [];
-        foreach (self::make()->get('process-instance', $parameters)->json() as $res) {
+
+        if(count($variables) > 0) 
+        {
+            $reqstr = 'process-instance?variables=';
+            foreach ($variables as $variable) {
+                $reqstr .= $variable['name'].$variable['operator'].$variable['value'].',';
+            }
+            
+        }
+        else
+        {
+            $reqstr = 'process-instance';
+        }
+
+        foreach (self::make()->get($reqstr)->json() as $res) {
             $instances[] = new ProcessInstance($res);
         }
 
