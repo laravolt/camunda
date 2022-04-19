@@ -20,6 +20,45 @@ class ProcessInstanceClient extends CamundaClient
         return $instances;
     }
 
+    public static function getByVariables(array $variables = []): array
+    {
+        /**
+         *  $variables = [
+         *       [
+         *          'name' => 'varname',
+         *          'operator' => "_eq_",
+         *          'value' => 'varvalue',
+         *       ],
+         *   ];
+         */
+
+        /**
+         * `operator` can only contain _eq_, _neq_, _gt_, _gte_, _lt_, _lte_
+         * Check Camunda documentation for more information
+         */
+
+        $instances = [];
+
+        if(count($variables) > 0) 
+        {
+            $reqstr = 'process-instance?variables=';
+            foreach ($variables as $variable) {
+                $reqstr .= $variable['name'].$variable['operator'].$variable['value'].',';
+            }
+            
+        }
+        else
+        {
+            $reqstr = 'process-instance';
+        }
+
+        foreach (self::make()->get($reqstr)->json() as $res) {
+            $instances[] = new ProcessInstance($res);
+        }
+
+        return $instances;
+    }
+
     public static function find(string $id): ProcessInstance
     {
         $response = self::make()->get("process-instance/$id");
