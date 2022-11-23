@@ -51,6 +51,8 @@ class Task extends DataTransferObject
     public bool $suspended;
 
     public string|null $formKey;
+    
+    public array|null $camundaFormRef;
 
     public string|null $tenantId;
 }
