@@ -25,13 +25,13 @@ class DeploymentClient extends CamundaClient
             ];
         }
 
-        $request = self::make()->withOptions(['multipart' => $multipart]);
+        $request = self::make()->asMultipart();
         foreach ((array) $bpmnFiles as $bpmn) {
             $filename = pathinfo($bpmn)['basename'];
             $request->attach($filename, file_get_contents($bpmn), $filename);
         }
 
-        $response = $request->post('deployment/create');
+        $response = $request->post('deployment/create', $multipart);
 
         if ($response->status() === 400) {
             throw new ParseException($response->json('message'));

@@ -17,7 +17,6 @@ class DeploymentTest extends TestCase
     {
         $files = __DIR__.'/../resources/sample.bpmn';
         $deployment = DeploymentClient::create('test', $files);
-
         $this->assertEquals('test', $deployment->name);
     }
 
