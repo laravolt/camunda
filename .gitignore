@@ -1,5 +1,6 @@
 /vendor
 /reports
+phpunit.xml
 clover.xml
 composer.lock
 .phpunit.result.cache
