@@ -116,6 +116,6 @@ class TaskTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->undeploySampleBpmn();
+        $this->truncateDeployment();
     }
 }

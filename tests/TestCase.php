@@ -23,12 +23,12 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     protected function deploySampleBpmn(): Deployment
     {
-        $files = __DIR__.'/../resources/sample.bpmn';
+        $files = [__DIR__.'/../resources/sample.bpmn'];
 
         return DeploymentClient::create('test', $files);
     }
 
-    protected function undeploySampleBpmn()
+    protected function truncateDeployment(): void
     {
         DeploymentClient::truncate(true);
     }

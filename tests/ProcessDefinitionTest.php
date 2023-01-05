@@ -11,7 +11,7 @@ class ProcessDefinitionTest extends TestCase
 {
     protected function tearDown(): void
     {
-        $this->undeploySampleBpmn();
+        $this->truncateDeployment();
     }
 
     public function test_start_new_process_instance(): void
