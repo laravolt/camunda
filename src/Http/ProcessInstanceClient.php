@@ -39,16 +39,12 @@ class ProcessInstanceClient extends CamundaClient
 
         $instances = [];
 
-        if(count($variables) > 0) 
-        {
+        if (count($variables) > 0) {
             $reqstr = 'process-instance?variables=';
             foreach ($variables as $variable) {
                 $reqstr .= $variable['name'].$variable['operator'].$variable['value'].',';
             }
-            
-        }
-        else
-        {
+        } else {
             $reqstr = 'process-instance';
         }
 
@@ -72,10 +68,17 @@ class ProcessInstanceClient extends CamundaClient
 
     public static function variables(string $id): array
     {
-        $variables = self::make()->get("process-instance/$id/variables")->json();
+        $variables = self::make()->get("process-instance/$id/variables", ['deserializeValues' => false])->json();
 
         return collect($variables)->mapWithKeys(
-            fn ($data, $name) => [$name => new Variable(name: $name, value: $data['value'], type: $data['type'])]
+            fn ($data, $name) => [
+                $name => new Variable(
+                    name: $name,
+                    value: $data['value'],
+                    type: $data['type'],
+                    valueInfo: $data['valueInfo'] ?? []
+                ),
+            ]
         )->toArray();
     }
 

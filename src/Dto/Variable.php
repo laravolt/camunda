@@ -13,4 +13,6 @@ class Variable extends DataTransferObject
     public string $type;
 
     public mixed $value;
+
+    public array $valueInfo = [];
 }
