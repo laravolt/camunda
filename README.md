@@ -94,7 +94,77 @@ $variables = TaskClient::submitAndReturnVariables(id: 'task-id', variables: ['na
 
 Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/task/
 
+### External Task
+```php
+use Laravolt\Camunda\Http\ExternalTaskClient;
 
+$topics = [
+    ['topicName' => 'pdf', 'lockDuration' => 600_000]
+];
+$externalTasks = ExternalTaskClient::fetchAndLock('worker1', $topics);
+foreach ($externalTasks as $externalTask) {
+    // do something with $externalTask
+    // Mark as complete after finished
+    ExternalTaskClient::complete($externalTasks->id);
+}
+
+// Unlock some task
+ExternalTaskClient::unlock($task->id)
+```
+
+Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/external-task/
+
+### Consume External Task
+Create a new job to consume external task via `php artisan make:job <JobName>` and modify the skeleton:
+
+```php
+use Laravolt\Camunda\Dto\ExternalTask;
+use Laravolt\Camunda\Http\ExternalTaskClient;
+
+public function __construct(
+    public string $workerId,
+    public ExternalTask $task
+) {
+}
+
+public function handle()
+{
+    // Do something with $this->task, e.g: get the variables and generate PDF
+    $variables = \Laravolt\Camunda\Http\ProcessInstanceClient::variables($this->task->processDefinitionId);
+    // PdfService::generate()
+    
+    // Complete the task
+    $status = ExternalTaskClient::complete($this->task->id, $this->workerId);
+}
+
+```
+
+Subscribe to some topic:
+```php
+// AppServiceProvider.php
+use Laravolt\Camunda\Http\ExternalTaskClient;
+
+public function boot()
+{
+    ExternalTaskClient::subscribe('pdf', GeneratePdf::class);
+}
+```
+
+Register the scheduler:
+```php
+// app/Console/Kernel.php
+protected function schedule(Schedule $schedule)
+{
+    $schedule->command('camunda:consume-external-task')->everyMinute();
+}
+```
+
+If you need shorter pooling time (sub-minute frequency), please check [Laravel Short Schedule](https://github.com/spatie/laravel-short-schedule).
+
+Reference:
+- https://laravel.com/docs/master/scheduling
+- https://laravel.com/docs/master/queues
+- https://github.com/spatie/laravel-short-schedule
 
 ### Task History (Completed Task)
 
