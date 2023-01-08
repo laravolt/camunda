@@ -27,6 +27,34 @@ class ExternalTaskClient extends CamundaClient
         ];
     }
 
+    /**
+     * @param string $processInstanceId
+     *
+     * @return ExternalTask[]
+     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
+     */
+    public static function getByProcessInstanceId(string $id): array
+    {
+        $response = self::make()->get("external-task?processInstanceId=$id");
+
+        $data = [];
+        if ($response->successful()) {
+            foreach ($response->json() as $task) {
+                $data[] = new ExternalTask($task);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param string $workerId
+     * @param array $topics
+     * @param int $maxTasks
+     *
+     * @return ExternalTask[]
+     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
+     */
     public static function fetchAndLock(string $workerId, array $topics, int $maxTasks = 10): array
     {
         $payload = [

@@ -16,7 +16,7 @@ class ExternalTask extends DataTransferObject
 
     public string $topicName;
 
-    public string $workerId;
+    public string|null $workerId;
 
     public string|null $activityId;
 
@@ -31,7 +31,7 @@ class ExternalTask extends DataTransferObject
     public string|null $businessKey;
 
     #[CastWith(CarbonCaster::class)]
-    public Carbon $lockExpirationTime;
+    public Carbon|null $lockExpirationTime;
 
     public string $processDefinitionId;
 
