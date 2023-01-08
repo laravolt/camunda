@@ -2,15 +2,9 @@
 
 namespace Laravolt\Camunda\Tests;
 
-use Laravolt\Camunda\Dto\TaskHistory;
-use Laravolt\Camunda\Dto\Variable;
-use Laravolt\Camunda\Exceptions\CamundaException;
-use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Http\DeploymentClient;
 use Laravolt\Camunda\Http\ExternalTaskClient;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
-use Laravolt\Camunda\Http\TaskClient;
-use Laravolt\Camunda\Http\TaskHistoryClient;
 
 class ExternalTaskTest extends TestCase
 {
