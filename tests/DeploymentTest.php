@@ -67,6 +67,7 @@ class DeploymentTest extends TestCase
 
     public function test_get_list_deployment(): void
     {
+        $this->truncateDeployment();
         DeploymentClient::create('deployment1', __DIR__.'/../resources/sample.bpmn');
         DeploymentClient::create('deployment2', __DIR__.'/../resources/sample2.bpmn');
 
