@@ -155,7 +155,7 @@ Register the scheduler:
 // app/Console/Kernel.php
 protected function schedule(Schedule $schedule)
 {
-    $schedule->command('camunda:consume-external-task')->everyMinute();
+    $schedule->command('camunda:consume-external-task --workerId=worker1')->everyMinute();
 }
 ```
 
