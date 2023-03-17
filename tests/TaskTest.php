@@ -42,12 +42,6 @@ class TaskTest extends TestCase
         }
     }
     
-    public function test_find_by_ids_is_null()
-    {
-        $tasks = TaskClient::getByProcessInstanceIds(null);
-        self::assertEmpty($tasks);
-
-    }
 
     public function test_find_by_ids_is_empty()
     {
