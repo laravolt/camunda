@@ -41,6 +41,20 @@ class TaskTest extends TestCase
             $this->assertEquals($task->id, $tastObject->id);
         }
     }
+    
+    public function test_find_by_ids_is_null()
+    {
+        $tasks = TaskClient::getByProcessInstanceIds(null);
+        self::assertEmpty($tasks);
+
+    }
+
+    public function test_find_by_ids_is_empty()
+    {
+        $tasks = TaskClient::getByProcessInstanceIds([]);
+        self::assertEmpty($tasks);
+
+    }
 
     public function test_handle_invalid_id()
     {
