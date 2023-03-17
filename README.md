@@ -88,6 +88,7 @@ use Laravolt\Camunda\Http\TaskClient;
 
 $task = TaskClient::find(id: 'task-id');
 $tasks = TaskClient::getByProcessInstanceId(id: 'process-instance-id');
+$tasks = TaskClient::getByProcessInstanceIds(ids: 'arrayof-process-instance-ids');
 TaskClient::submit(id: 'task-id', variables: ['name' => ['value' => 'Foo', 'type' => 'String']]); // will return true or false
 $variables = TaskClient::submitAndReturnVariables(id: 'task-id', variables: ['name' => ['value' => 'Foo', 'type' => 'String']]) // will return array of variable
 ```

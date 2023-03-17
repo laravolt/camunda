@@ -29,6 +29,26 @@ class TaskTest extends TestCase
             $this->assertEquals($task->id, $tastObject->id);
         }
     }
+    
+    public function test_find_by_ids()
+    {
+        $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
+        $processInstance = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
+        $tasks = TaskClient::getByProcessInstanceIds([$processInstance->id]);
+
+        foreach ($tasks as $task) {
+            $tastObject = TaskClient::find($task->id);
+            $this->assertEquals($task->id, $tastObject->id);
+        }
+    }
+    
+
+    public function test_find_by_ids_is_empty()
+    {
+        $tasks = TaskClient::getByProcessInstanceIds([]);
+        self::assertEmpty($tasks);
+
+    }
 
     public function test_handle_invalid_id()
     {
