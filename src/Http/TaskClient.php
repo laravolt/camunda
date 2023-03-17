@@ -54,7 +54,7 @@ class TaskClient extends CamundaClient
         $data = [];
         if ($response->successful()) {
             foreach ($response->json() as $task) {
-                $data[] = new ExternalTask($task);
+                $data[] = new Task($task);
             }
         }
 
