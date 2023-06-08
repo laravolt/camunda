@@ -69,7 +69,7 @@ class TaskClient extends CamundaClient
     public static function unfinishedTask(array $payload): array
     {
         $payload['unfinished'] =  true;
-        return self::getTaskByFilter($payload);
+        return self::get($payload);
     }
 
 
