@@ -48,7 +48,7 @@ class TaskClient extends CamundaClient
      * @return Task[]
      * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
      */
-    public static function getTaskByFilter(array $payload): array
+    public static function get(array $payload): array
     {
         $response = self::make()->get("task", $payload);
 
@@ -66,7 +66,7 @@ class TaskClient extends CamundaClient
      * @return Task[]
      * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
      */
-    public static function getUnfinishedTaskWithFilter(array $payload): array
+    public static function unfinishedTask(array $payload): array
     {
         $payload['unfinished'] =  true;
         return self::getTaskByFilter($payload);
