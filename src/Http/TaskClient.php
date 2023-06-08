@@ -41,6 +41,38 @@ class TaskClient extends CamundaClient
         return $data;
     }
 
+
+    /**
+     * @param array $payload
+     *
+     * @return Task[]
+     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
+     */
+    public static function get(array $payload): array
+    {
+        $response = self::make()->get("task", $payload);
+
+        $data = [];
+        if ($response->successful()) {
+            foreach ($response->json() as $task) {
+                $data[] = new Task($task);
+            }
+        }
+        return $data;
+    }
+    /**
+     * @param array $payload
+     *
+     * @return Task[]
+     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
+     */
+    public static function unfinishedTask(array $payload): array
+    {
+        $payload['unfinished'] =  true;
+        return self::get($payload);
+    }
+
+
     /**
      * @param string $processInstanceIds
      *
