@@ -4,6 +4,7 @@ namespace Laravolt\Camunda\Http;
 
 use Laravolt\Camunda\Dto\ExternalTask;
 use Laravolt\Camunda\Exceptions\CamundaException;
+use Laravolt\Camunda\Exceptions\UnexpectedResponseException;
 
 class ExternalTaskClient extends CamundaClient
 {
@@ -90,9 +91,15 @@ class ExternalTaskClient extends CamundaClient
         if ($localVariables) {
             $payload['localVariables'] = $localVariables;
         }
-        $response = self::make()->post("external-task/$id/complete", $payload);
+        $url = "external-task/$id/complete";
+        $response = self::make()->post($url, $payload);
+        $isSuccessful = $response->status() === 204;
 
-        return $response->status() === 204;
+        if (! $isSuccessful) {
+            throw (new UnexpectedResponseException)->for($url, $payload, $response->json());
+        }
+
+        return $isSuccessful;
     }
 
     public static function unlock(string $id): bool
