@@ -4,6 +4,7 @@ namespace Laravolt\Camunda\Http;
 
 use Laravolt\Camunda\Dto\ExternalTask;
 use Laravolt\Camunda\Exceptions\CamundaException;
+use UnexpectedValueException;
 
 class ExternalTaskClient extends CamundaClient
 {
@@ -91,8 +92,14 @@ class ExternalTaskClient extends CamundaClient
             $payload['localVariables'] = $localVariables;
         }
         $response = self::make()->post("external-task/$id/complete", $payload);
+        $isSuccessful = $response->status() === 204;
 
-        return $response->status() === 204;
+        if (! $isSuccessful) {
+            $context = print_r(['response' => $response->json(), 'payload' => $payload], true);
+            throw new UnexpectedValueException("Error processing request. Context: ". $context, $response->status());
+        }
+
+        return $isSuccessful;
     }
 
     public static function unlock(string $id): bool
