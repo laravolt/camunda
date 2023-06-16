@@ -15,23 +15,24 @@ class ProcessDefinitionClient extends CamundaClient
     {
         $variables = $args['variables'] ?? [];
         $businessKey = $args['businessKey'] ?? null;
+//
+//        // At least one value must be set...
+//        if (empty($variables)) {
+//            throw new InvalidArgumentException('Cannot start process instance with empty variables');
+//        }
 
-        // At least one value must be set...
-        if (empty($variables)) {
-            throw new InvalidArgumentException('Cannot start process instance with empty variables');
+        $payload = [];
+
+        if (!empty($variables)) {
+            $payload['variables'] = $variables;
+            $payload['withVariablesInReturn'] = true;
         }
-
-        $payload = [
-            'variables' => $variables,
-            'withVariablesInReturn' => true,
-        ];
         if ($businessKey) {
             $payload['businessKey'] = $businessKey;
         }
 
         $path = self::makeIdentifierPath('process-definition/{identifier}/start', $args);
         $response = self::make()->post($path, $payload);
-
         if ($response->successful()) {
             return new ProcessInstance($response->json());
         }
