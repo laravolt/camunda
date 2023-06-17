@@ -66,6 +66,25 @@ class ProcessInstanceClient extends CamundaClient
         return new ProcessInstance($response->json());
     }
 
+
+    public static function findByBusniessKey(string $businessKey): ProcessInstance
+    {
+
+        $response = self::make()->get("process-instance?businessKey=" . $businessKey);
+
+        if ($response->status() === 404) {
+            throw new ObjectNotFoundException($response->json('message'));
+        }
+
+        $data =  $response->json();
+
+        if(sizeof($data) ==  0) {
+            throw new ObjectNotFoundException("Process Instance Not Found");
+        }
+
+        return new ProcessInstance($data[sizeof($data) -1 ]);
+    }
+
     public static function variables(string $id): array
     {
         $variables = self::make()->get("process-instance/$id/variables", ['deserializeValues' => false])->json();
