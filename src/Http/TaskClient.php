@@ -93,6 +93,45 @@ class TaskClient extends CamundaClient
         return $data;
     }
 
+    public static function claim(string $id ,  string $userId): bool
+    {
+        $response = self::make()->post("task/$id/claim", [
+            "userId"=> $userId
+        ]);
+
+        if ($response->successful()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function unclaim(string $id ,  string $userId): bool
+    {
+        $response = self::make()->post("task/$id/unclam", [
+            "userId"=> $userId
+        ]);
+
+        if ($response->successful()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function assign(string $id,  string $userId): bool
+    {
+        $response = self::make()->post("task/$id/assigne", [
+            "userId"=> $userId
+        ]);
+
+        if ($response->successful()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static function submit(string $id, array $variables): bool
     {
         $response = self::make()->post(
