@@ -132,9 +132,13 @@ class TaskClient extends CamundaClient
 
     public static function submit(string $id, array $variables): bool
     {
+        $varData = (object)[];
+        if(!empty($variables)) {
+            $varData = (object)$variables;
+        }
         $response = self::make()->post(
             "task/$id/submit-form",
-            compact('variables')
+            ['variables' => $varData]
         );
 
         if ($response->status() === 204) {

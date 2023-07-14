@@ -13,7 +13,7 @@ class ProcessDefinitionClient extends CamundaClient
 {
     public static function start(...$args): ProcessInstance
     {
-        $variables = $args['variables'] ?? [];
+        $variables = $args['variables'] ?? (object)[];
         $businessKey = $args['businessKey'] ?? null;
 //
 //        // At least one value must be set...
