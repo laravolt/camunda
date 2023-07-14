@@ -106,11 +106,9 @@ class TaskClient extends CamundaClient
         return false;
     }
 
-    public static function unclaim(string $id ,  string $userId): bool
+    public static function unclaim(string $id): bool
     {
-        $response = self::make()->post("task/$id/unclam", [
-            "userId"=> $userId
-        ]);
+        $response = self::make()->post("task/$id/unclam");
 
         if ($response->successful()) {
             return true;

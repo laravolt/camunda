@@ -60,6 +60,7 @@ Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/pro
 
 
 
+
 ### Process Instance
 ```php
 use Laravolt\Camunda\Http\ProcessInstanceClient;
@@ -81,6 +82,23 @@ ProcessInstanceClient::delete(id: 'some-id');
 Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/process-instance/
 
 
+### Message Event
+
+```php  
+use Laravolt\Camunda\Http\MessageEventClient;
+// Start processinstance with message event 
+// Required
+// messageName : message event name 
+// businessKey : Busniess key for process instance
+
+// Rerturn Process insntance from message event
+
+MessageEventClient::start(messageName: "testing",  businessKey: "businessKey")
+
+
+```
+
+
 
 ### Task
 ```php
@@ -91,6 +109,16 @@ $tasks = TaskClient::getByProcessInstanceId(id: 'process-instance-id');
 $tasks = TaskClient::getByProcessInstanceIds(ids: 'arrayof-process-instance-ids');
 TaskClient::submit(id: 'task-id', variables: ['name' => ['value' => 'Foo', 'type' => 'String']]); // will return true or false
 $variables = TaskClient::submitAndReturnVariables(id: 'task-id', variables: ['name' => ['value' => 'Foo', 'type' => 'String']]) // will return array of variable
+
+// Claim a Task
+$tasks = TaskClient::claim($task_id,  $user_id);
+// Unclaim a Task
+$tasks = TaskClient::unclaim($task_id);
+// Assign a Task
+$tasks = TaskClient::assign($task_id,  $user_id);
+
+
+
 ```
 
 Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/task/
