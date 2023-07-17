@@ -119,7 +119,7 @@ class TaskClient extends CamundaClient
 
     public static function assign(string $id,  string $userId): bool
     {
-        $response = self::make()->post("task/$id/assigne", [
+        $response = self::make()->post("task/$id/assignee", [
             "userId"=> $userId
         ]);
 
