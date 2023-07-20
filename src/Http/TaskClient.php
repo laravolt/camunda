@@ -139,10 +139,14 @@ class TaskClient extends CamundaClient
      */
     public static function getByAssignedAndProcessInstanceId($user_id , array $ids): array
     {
-        $response = self::make()->get("task" , [
-            "processInstanceIdIn"=>   implode(",",  $ids),
+        $payload =   [
             "assignee" => $user_id
-        ]);
+        ];
+        if ($ids != []) {
+            $payload['processInstanceIdIn']   = implode(",",  $ids);
+        }
+
+        $response = self::make()->get("task", $payload);
 
         $data = [];
         if ($response->successful()) {
