@@ -137,7 +137,7 @@ class TaskClient extends CamundaClient
      * @return Task[]
      * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
      */
-    public static function getByAssignedAndProcessInstanceId($user_id , array $ids): array
+    public static function getByAssignedAndProcessInstanceId($user_id , array $ids = []): array
     {
         $payload =   [
             "assignee" => $user_id
