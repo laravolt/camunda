@@ -102,6 +102,28 @@ class ExternalTaskClient extends CamundaClient
         return $isSuccessful;
     }
 
+
+    public static function fail(
+        string $id,
+        string $workerId,
+        string $errorMessage = "Does not compute",
+        int    $retryTimeout = 60000,
+    ): bool
+    {
+
+        $payload = compact('workerId', 'errorMessage', 'retryTimeout');
+        $url = "external-task/$id/failure";
+        $response = self::make()->post($url, $payload);
+        $isSuccessful = $response->status() === 204;
+
+        if (!$isSuccessful) {
+            throw (new UnexpectedResponseException)->for($url, $payload, $response->json());
+        }
+
+        return $isSuccessful;
+    }
+
+
     public static function unlock(string $id): bool
     {
         $response = self::make()->post("external-task/$id/unlock");
