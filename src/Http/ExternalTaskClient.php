@@ -49,6 +49,24 @@ class ExternalTaskClient extends CamundaClient
     }
 
     /**
+     * @return ExternalTask[]
+     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
+     */
+    public static function getTaskLocked(): array
+    {
+        $response = self::make()->get("external-task?locked=true");
+
+        $data = [];
+        if ($response->successful()) {
+            foreach ($response->json() as $task) {
+                $data[] = new ExternalTask($task);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * @param string $workerId
      * @param array $topics
      * @param int $maxTasks
