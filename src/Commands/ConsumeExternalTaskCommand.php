@@ -7,12 +7,13 @@ use Laravolt\Camunda\Http\ExternalTaskClient;
 
 class ConsumeExternalTaskCommand extends Command
 {
-    protected $signature = 'camunda:consume-external-task {--workerId=} {--topic=*}';
+    protected $signature = 'camunda:consume-external-task {--workerId=} {--topic=*} {--queue=default}';
 
     protected $description = '
         Consume Camunda external task by topic  
         {--workerId : A worker identifier} 
         {--topic : A Camunda external task topic name to be fetched}
+        {--queue : A queue for job dispatching}
     ';
 
     public function handle()
@@ -21,6 +22,7 @@ class ConsumeExternalTaskCommand extends Command
         $topics = [];
         $summary = [];
         $workerId = $this->option('workerId');
+        $queue = $this->option('queue');
         foreach ($subscribers as $topicName => $subscriber) {
             $topics[$topicName] = collect($subscriber)->only(['topicName', 'lockDuration'])->toArray();
             $summary[$topicName] = [$topicName, $subscriber['job'] ?? '-', 0];
@@ -31,7 +33,7 @@ class ConsumeExternalTaskCommand extends Command
         foreach ($externalTasks as $task) {
             $jobClass = $subscribers[$task->topicName]['job'] ?? false;
             if ($jobClass) {
-                $jobClass::dispatch($workerId, $task);
+                $jobClass::dispatch($workerId, $task)->onQueue($queue);
                 $summary[$task->topicName][2]++;
             }
         }
