@@ -49,6 +49,14 @@ class ProcessInstanceTest extends TestCase
 
         $this->assertCount(1, $processInstances);
     }
+    public function test_get_with_parameter_is_empty()
+    {
+        $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
+        ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
+        $processInstances = ProcessInstanceClient::get([]);
+
+        $this->assertCount(1, $processInstances);
+    }
     public function test_get_with_broken_parameter()
     {
         $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
