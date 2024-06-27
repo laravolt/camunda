@@ -13,7 +13,12 @@ class ProcessInstanceClient extends CamundaClient
     public static function get(array $parameters = []): array
     {
         $instances = [];
-        foreach (self::make()->get('process-instance', $parameters)->json() as $res) {
+        if (!$parameters) {
+            $res = self::make()->get('process-instance');
+        } else {
+            $res = self::make()->post('process-instance', $parameters);
+        }
+        foreach ($res->json() as $res) {
             $instances[] = new ProcessInstance($res);
         }
 
@@ -26,29 +31,23 @@ class ProcessInstanceClient extends CamundaClient
          *  $variables = [
          *       [
          *          'name' => 'varname',
-         *          'operator' => "_eq_",
+         *          'operator' => "eq",
          *          'value' => 'varvalue',
          *       ],
          *   ];
          */
 
         /**
-         * `operator` can only contain _eq_, _neq_, _gt_, _gte_, _lt_, _lte_
+         * `operator` can only contain `eq`, `neq`, `gt`, `gte`, `lt`, `lte`
          * Check Camunda documentation for more information
          */
 
         $instances = [];
 
-        if (count($variables) > 0) {
-            $reqstr = 'process-instance?variables=';
-            foreach ($variables as $variable) {
-                $reqstr .= $variable['name'].$variable['operator'].$variable['value'].',';
-            }
-        } else {
-            $reqstr = 'process-instance';
-        }
-
-        foreach (self::make()->get($reqstr)->json() as $res) {
+ 
+        foreach (self::make()->post("process-instance" , [
+            "variables" => $variables
+        ])->json() as $res) {
             $instances[] = new ProcessInstance($res);
         }
 
@@ -70,7 +69,9 @@ class ProcessInstanceClient extends CamundaClient
     public static function findByBusniessKey(string $businessKey): ProcessInstance
     {
 
-        $response = self::make()->get("process-instance?businessKey=" . $businessKey);
+        $response = self::make()->post("process-instance"  , [
+            'businessKey' => $businessKey
+        ]);
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
@@ -78,11 +79,11 @@ class ProcessInstanceClient extends CamundaClient
 
         $data =  $response->json();
 
-        if(sizeof($data) ==  0) {
+        if (sizeof($data) ==  0) {
             throw new ObjectNotFoundException("Process Instance Not Found");
         }
 
-        return new ProcessInstance($data[sizeof($data) -1 ]);
+        return new ProcessInstance($data[sizeof($data) - 1]);
     }
 
     public static function variables(string $id): array

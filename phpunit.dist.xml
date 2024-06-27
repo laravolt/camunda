@@ -21,7 +21,7 @@
     <php>
         <env name="APP_NAME" value="Laravolt Camunda Package"/>
         <env name="APP_ENV" value="test"/>
-        <env name="CAMUNDA_URL" value="http://localhost:9090/engine-rest/"/>
+        <env name="CAMUNDA_URL" value="http://localhost:8080/engine-rest/"/>
     </php>
 
 </phpunit>

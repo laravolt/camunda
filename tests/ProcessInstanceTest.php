@@ -6,6 +6,7 @@ use Laravolt\Camunda\Dto\Variable;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
 use Laravolt\Camunda\Http\ProcessInstanceClient;
+use Nette\Utils\Random;
 
 class ProcessInstanceTest extends TestCase
 {
@@ -30,7 +31,36 @@ class ProcessInstanceTest extends TestCase
     {
         $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
         ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
+
         $processInstances = ProcessInstanceClient::get();
+
+        $this->assertCount(1, $processInstances);
+    }
+    public function test_get_with_parameter()
+    {
+        $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
+        $processInstances = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
+        $params = [
+            "processIsntanceIds" => [
+                $processInstances->id,
+            ]
+        ];
+        $processInstances = ProcessInstanceClient::get($params);
+
+        $this->assertCount(1, $processInstances);
+    }
+    public function test_get_with_broken_parameter()
+    {
+        $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
+        $processInstances = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
+        $mapmany = [];
+        for ($i = 0; $i < 500; $i++) {
+            $mapmany[] = $processInstances->id;
+        }
+        $params = [
+            "processIsntanceIds" => $mapmany
+        ];
+        $processInstances = ProcessInstanceClient::get($params);
 
         $this->assertCount(1, $processInstances);
     }
@@ -46,6 +76,31 @@ class ProcessInstanceTest extends TestCase
         $processInstances = ProcessInstanceClient::get(['businessKey' => '002']);
         $this->assertCount(0, $processInstances);
     }
+
+    public function test_get_with_busniessKey()
+    {
+        $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
+        ProcessDefinitionClient::start(key: 'process_1', variables: $variables, businessKey: '001');
+        $processInstance = ProcessInstanceClient::findByBusniessKey('001');
+        $this->assertEquals('001', $processInstance->businessKey);
+    }
+
+
+    public function test_get_with_variables()
+    {
+        $random = Random::generate();
+        $variables = ['title' => ['value' => 'Foo' . $random, 'type' => 'string']];
+        ProcessDefinitionClient::start(key: 'process_1', variables: $variables, businessKey: '001');
+        $processInstance = ProcessInstanceClient::getByVariables([
+            [
+                'name' => 'title',
+                'operator' => "eq",
+                'value' => $variables['title']['value'],
+            ],
+        ]);
+        $this->assertCount(1, $processInstance);
+    }
+
 
     public function test_get_variables()
     {
