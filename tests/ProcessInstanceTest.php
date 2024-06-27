@@ -101,6 +101,15 @@ class ProcessInstanceTest extends TestCase
         $this->assertCount(1, $processInstance);
     }
 
+    public function test_get_with_variables_empty()
+    {
+        $random = Random::generate();
+        $variables = ['title' => ['value' => 'Foo' . $random, 'type' => 'string']];
+        ProcessDefinitionClient::start(key: 'process_1', variables: $variables, businessKey: Random::generate());
+        $processInstance = ProcessInstanceClient::getByVariables([]);
+        $this->assertCount(1, $processInstance);
+    }
+
 
     public function test_get_variables()
     {

@@ -44,10 +44,15 @@ class ProcessInstanceClient extends CamundaClient
 
         $instances = [];
 
- 
-        foreach (self::make()->post("process-instance" , [
-            "variables" => $variables
-        ])->json() as $res) {
+        if (!$variables) {
+            $res = self::make()->get('process-instance');
+        } else {
+            $res = self::make()->post('process-instance', [
+                'variables' => $variables
+
+            ]);
+        }
+        foreach ($res->json() as $res) {
             $instances[] = new ProcessInstance($res);
         }
 
@@ -69,7 +74,7 @@ class ProcessInstanceClient extends CamundaClient
     public static function findByBusniessKey(string $businessKey): ProcessInstance
     {
 
-        $response = self::make()->post("process-instance"  , [
+        $response = self::make()->post("process-instance", [
             'businessKey' => $businessKey
         ]);
 
