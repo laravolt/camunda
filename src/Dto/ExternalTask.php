@@ -54,4 +54,6 @@ class ExternalTask extends DataTransferObject
     public bool $suspended;
 
     public array|null $extensionProperties;
+
+    public string|null $createTime;
 }
