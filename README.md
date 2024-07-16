@@ -45,8 +45,8 @@ $instance = ProcessDefinitionClient::start(key: 'process_1', variables: $variabl
 
 
 // Get BPMN definition in XML format
-ProcessDefinitionClient::xml(key: 'process_1'); 
-ProcessDefinitionClient::xml(id: 'process_1:xxxx'); 
+ProcessDefinitionClient::xml(key: 'process_1');
+ProcessDefinitionClient::xml(id: 'process_1:xxxx');
 
 // Get all definition
 ProcessDefinitionClient::get();
@@ -84,11 +84,11 @@ Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/pro
 
 ### Message Event
 
-```php  
+```php
 use Laravolt\Camunda\Http\MessageEventClient;
-// Start processinstance with message event 
+// Start processinstance with message event
 // Required
-// messageName : message event name 
+// messageName : message event name
 // businessKey : Busniess key for process instance
 
 // Rerturn Process insntance from message event
@@ -139,6 +139,9 @@ foreach ($externalTasks as $externalTask) {
 
 // Unlock some task
 ExternalTaskClient::unlock($task->id)
+
+// Get task locked
+$externalTaskLocked = ExternalTaskClient::getTaskLocked();
 ```
 
 Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/external-task/
@@ -161,7 +164,7 @@ public function handle()
     // Do something with $this->task, e.g: get the variables and generate PDF
     $variables = \Laravolt\Camunda\Http\ProcessInstanceClient::variables($this->task->processDefinitionId);
     // PdfService::generate()
-    
+
     // Complete the task
     $status = ExternalTaskClient::complete($this->task->id, $this->workerId);
 }
