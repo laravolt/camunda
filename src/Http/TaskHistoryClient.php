@@ -21,7 +21,7 @@ class TaskHistoryClient extends CamundaClient
             return new TaskHistory(Arr::first($response->json()));
         }
 
-        throw new CamundaException($response->json('message'));
+        throw new CamundaException($response->json('message') ?? $response->body());
     }
 
     /**

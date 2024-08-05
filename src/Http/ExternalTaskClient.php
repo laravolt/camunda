@@ -93,7 +93,7 @@ class ExternalTaskClient extends CamundaClient
             return $data;
         }
 
-        throw new CamundaException($response->json('message'));
+        throw new CamundaException($response->json('message') ?? $response->body());
     }
 
     public static function complete(
