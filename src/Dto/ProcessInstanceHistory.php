@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Laravolt\Camunda\Dto;
 
 use Illuminate\Support\Carbon;
+use Laravolt\Camunda\Dto\Casters\CarbonCaster;
+use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
 
 class ProcessInstanceHistory extends Data
@@ -16,8 +18,11 @@ class ProcessInstanceHistory extends Data
         public string $processDefinitionKey,
         public ?string $processDefinitionName,
         public int $processDefinitionVersion,
+        #[WithCast(CarbonCaster::class)]
         public Carbon $startTime,
+        #[WithCast(CarbonCaster::class)]
         public ?Carbon $endTime,
+        #[WithCast(CarbonCaster::class)]
         public ?Carbon $removalTime,
         public ?int $durationInMillis,
         public ?string $startUserId,

@@ -3,6 +3,8 @@
 namespace Laravolt\Camunda\Dto;
 
 use Illuminate\Support\Carbon;
+use Laravolt\Camunda\Dto\Casters\CarbonCaster;
+use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
 
 class ExternalTask extends Data
@@ -14,7 +16,9 @@ class ExternalTask extends Data
         public ?string $errorDetails,
         public ?string $executionId,
         public string $id,
+        #[WithCast(CarbonCaster::class)]
         public ?Carbon $lockExpirationTime,
+        #[WithCast(CarbonCaster::class)]
         public ?Carbon $createTime,
         public string $processDefinitionId,
         public string $processDefinitionKey,

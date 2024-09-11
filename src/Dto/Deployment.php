@@ -3,6 +3,8 @@
 namespace Laravolt\Camunda\Dto;
 
 use Illuminate\Support\Carbon;
+use Laravolt\Camunda\Dto\Casters\CarbonCaster;
+use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Data;
 
 class Deployment extends Data
@@ -12,6 +14,7 @@ class Deployment extends Data
         public ?string $tenantId,
         public ?string $name,
         public ?string $source,
+        #[WithCast(CarbonCaster::class)]
         public Carbon $deploymentTime,
         public ?array $processDefinitions = [],
         public ?array $links = [],
