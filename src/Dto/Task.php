@@ -3,59 +3,33 @@
 namespace Laravolt\Camunda\Dto;
 
 use Illuminate\Support\Carbon;
-use Laravolt\Camunda\Dto\Casters\CarbonCaster;
-use Spatie\DataTransferObject\Attributes\CastWith;
-use Spatie\DataTransferObject\Attributes\Strict;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-#[Strict]
-class Task extends DataTransferObject
+class Task extends Data
 {
-    public string $id;
-
-    public string $name;
-
-    public string|null $assignee;
-
-    #[CastWith(CarbonCaster::class)]
-    public Carbon $created;
-
-    #[CastWith(CarbonCaster::class)]
-    public Carbon|null $lastUpdated;
-
-    public string|null $due;
-
-    public string|null $followUp;
-
-    public string|null $delegationState;
-
-    public string|null $description;
-
-    public string $executionId;
-
-    public string|null $owner;
-
-    public string|null $parentTaskId;
-
-    public string $priority;
-
-    public string $processDefinitionId;
-
-    public string $processInstanceId;
-
-    public string $taskDefinitionKey;
-
-    public string|null $caseExecutionId;
-
-    public string|null $caseInstanceId;
-
-    public string|null $caseDefinitionId;
-
-    public bool $suspended;
-
-    public string|null $formKey;
-
-    public array|null $camundaFormRef;
-
-    public string|null $tenantId;
+    public function __construct(
+        public string $id,
+        public string $name,
+        public ?string $assignee,
+        public Carbon $created,
+        public ?string $due,
+        public ?string $followUp,
+        public ?Carbon $lastUpdated,
+        public ?string $delegationState,
+        public ?string $description,
+        public string $executionId,
+        public ?string $owner,
+        public ?string $parentTaskId,
+        public string $priority,
+        public string $processDefinitionId,
+        public string $processInstanceId,
+        public string $taskDefinitionKey,
+        public ?string $caseExecutionId,
+        public ?string $caseInstanceId,
+        public ?string $caseDefinitionId,
+        public bool $suspended,
+        public ?string $formKey = null,
+        public ?array $camundaFormRef = null,
+        public ?string $tenantId = null,
+    ) {}
 }

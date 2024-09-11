@@ -2,17 +2,14 @@
 
 namespace Laravolt\Camunda\Dto;
 
-use Spatie\DataTransferObject\Attributes\Strict;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-#[Strict]
-class Variable extends DataTransferObject
+class Variable extends Data
 {
-    public string $name;
-
-    public string $type;
-
-    public mixed $value;
-
-    public array $valueInfo = [];
+    public function __construct(
+        public string $name,
+        public string $type,
+        public mixed $value,
+        public ?array $valueInfo = [],
+    ) {}
 }

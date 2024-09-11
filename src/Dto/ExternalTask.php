@@ -3,57 +3,31 @@
 namespace Laravolt\Camunda\Dto;
 
 use Illuminate\Support\Carbon;
-use Laravolt\Camunda\Dto\Casters\CarbonCaster;
-use Laravolt\Camunda\Dto\Casters\VariablesCaster;
-use Spatie\DataTransferObject\Attributes\CastWith;
-use Spatie\DataTransferObject\Attributes\Strict;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-#[Strict]
-class ExternalTask extends DataTransferObject
+class ExternalTask extends Data
 {
-    public string $id;
-
-    public string $topicName;
-
-    public string|null $workerId;
-
-    public string|null $activityId;
-
-    public string|null $activityInstanceId;
-
-    public string|null $errorMessage;
-
-    public string|null $errorDetails;
-
-    public string|null $executionId;
-
-    public string|null $businessKey;
-
-    #[CastWith(CarbonCaster::class)]
-    public Carbon|null $lockExpirationTime;
-
-    public string $processDefinitionId;
-
-    public string $processDefinitionKey;
-
-    public string|null $processDefinitionVersionTag;
-
-    public string $processInstanceId;
-
-    public string|null $tenantId;
-
-    public ?int $retries;
-
-    public int $priority;
-
-    /** @var \Laravolt\Camunda\Dto\Variable[] */
-    #[CastWith(VariablesCaster::class, Variable::class)]
-    public array|null $variables;
-
-    public bool $suspended;
-
-    public array|null $extensionProperties;
-
-    public string|null $createTime;
+    public function __construct(
+        public ?string $activityId,
+        public ?string $activityInstanceId,
+        public ?string $errorMessage,
+        public ?string $errorDetails,
+        public ?string $executionId,
+        public string $id,
+        public ?Carbon $lockExpirationTime,
+        public ?Carbon $createTime,
+        public string $processDefinitionId,
+        public string $processDefinitionKey,
+        public ?string $processDefinitionVersionTag,
+        public string $processInstanceId,
+        public ?int $retries,
+        public bool $suspended,
+        public ?string $workerId,
+        public string $topicName,
+        public ?string $tenantId,
+        public ?array $variables,
+        public int $priority,
+        public ?string $businessKey = null,
+        public ?array $extensionProperties = [],
+    ) {}
 }

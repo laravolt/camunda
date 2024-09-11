@@ -4,31 +4,19 @@ declare(strict_types=1);
 
 namespace Laravolt\Camunda\Dto;
 
-use Laravolt\Camunda\Dto\Casters\VariablesCaster;
-use Spatie\DataTransferObject\Attributes\CastWith;
-use Spatie\DataTransferObject\Attributes\Strict;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-#[Strict]
-class ProcessInstance extends DataTransferObject
+class ProcessInstance extends Data
 {
-    public string $id;
-
-    public string|null $tenantId;
-
-    public string|null $businessKey;
-
-    public array $links;
-
-    public string $definitionId;
-
-    public ?string $caseInstanceId;
-
-    public bool $ended;
-
-    public bool $suspended;
-
-    /** @var \Laravolt\Camunda\Dto\Variable[]  */
-    #[CastWith(VariablesCaster::class, Variable::class)]
-    public array|null $variables;
+    public function __construct(
+        public array $links,
+        public string $id,
+        public string $definitionId,
+        public ?string $businessKey,
+        public ?string $caseInstanceId,
+        public bool $ended,
+        public bool $suspended,
+        public ?string $tenantId = null,
+        public ?array $variables = [],
+    ) {}
 }

@@ -2,13 +2,12 @@
 
 namespace Laravolt\Camunda\Dto;
 
-use Spatie\DataTransferObject\Attributes\Strict;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-#[Strict]
-class Tenant extends DataTransferObject
+class Tenant extends Data
 {
-    public string $id;
-
-    public string $name;
+    public function __construct(
+        public string $id,
+        public string $name,
+    ) {}
 }

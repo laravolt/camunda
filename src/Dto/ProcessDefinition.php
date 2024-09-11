@@ -4,37 +4,24 @@ declare(strict_types=1);
 
 namespace Laravolt\Camunda\Dto;
 
-use Spatie\DataTransferObject\Attributes\Strict;
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-#[Strict]
-class ProcessDefinition extends DataTransferObject
+class ProcessDefinition extends Data
 {
-    public string $id;
-
-    public string|null $tenantId;
-
-    public string $key;
-
-    public string $category;
-
-    public ?string $name;
-
-    public ?string $description;
-
-    public int $version;
-
-    public string $resource;
-
-    public string $deploymentId;
-
-    public ?string $diagram;
-
-    public bool $suspended;
-
-    public ?string $versionTag;
-
-    public ?string $historyTimeToLive;
-
-    public bool $startableInTasklist;
+    public function __construct(
+        public string $id,
+        public string $key,
+        public string $category,
+        public ?string $description,
+        public ?string $name,
+        public int $version,
+        public string $resource,
+        public string $deploymentId,
+        public ?string $diagram,
+        public bool $suspended,
+        public ?string $tenantId,
+        public ?string $versionTag,
+        public ?string $historyTimeToLive,
+        public bool $startableInTasklist,
+    ) {}
 }
