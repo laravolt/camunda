@@ -4,17 +4,17 @@ namespace Laravolt\Camunda\Dto\Casters;
 
 use ArrayAccess;
 use LogicException;
-use Spatie\DataTransferObject\Caster;
+use Spatie\LaravelData\Casts\Cast;
+use Spatie\LaravelData\Support\DataProperty;
 
-class VariablesCaster implements Caster
+class VariablesCaster implements Cast
 {
     public function __construct(
         private array $types,
         private string $itemType,
-    ) {
-    }
+    ) {}
 
-    public function cast(mixed $value): array|ArrayAccess
+    public function cast(DataProperty $property, mixed $value, array $context): mixed
     {
         foreach ($this->types as $type) {
             if ($type === 'array') {
@@ -34,17 +34,17 @@ class VariablesCaster implements Caster
     private function castArray(mixed $value): array
     {
         return collect($value)
-            ->map(fn (array $data, string $key) => $this->castItem($key, $data))
+            ->map(fn(array $data, string $key) => $this->castItem($key, $data))
             ->toArray();
     }
 
     private function castArrayAccess(mixed $value): ArrayAccess
     {
-        $arrayAccess = new $this->type();
+        $arrayAccess = new $this->type(); // TODO: Undefined property '$type'.
 
         array_walk(
             $value,
-            fn (array $data, string $key) => $arrayAccess[] = $this->castItem($key, $data)
+            fn(array $data, string $key) => $arrayAccess[] = $this->castItem($key, $data)
         );
 
         return $arrayAccess;
