@@ -18,7 +18,7 @@ class TaskClient extends CamundaClient
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        return new Task($response->json());
+        return Task::from($response->json());
     }
 
     /**
@@ -34,7 +34,7 @@ class TaskClient extends CamundaClient
         $data = [];
         if ($response->successful()) {
             foreach ($response->json() as $task) {
-                $data[] = new Task($task);
+                $data[] = Task::from($task);
             }
         }
 
@@ -55,7 +55,7 @@ class TaskClient extends CamundaClient
         $data = [];
         if ($response->successful()) {
             foreach ($response->json() as $task) {
-                $data[] = new Task($task);
+                $data[] = Task::from($task);
             }
         }
         return $data;
@@ -91,7 +91,7 @@ class TaskClient extends CamundaClient
         $data = [];
         if ($response->successful()) {
             foreach ($response->json() as $task) {
-                $data[] = new Task($task);
+                $data[] = Task::from($task);
             }
         }
 
@@ -156,7 +156,7 @@ class TaskClient extends CamundaClient
         $data = [];
         if ($response->successful()) {
             foreach ($response->json() as $task) {
-                $data[] = new Task($task);
+                $data[] = Task::from($task);
             }
         }
 
@@ -189,7 +189,14 @@ class TaskClient extends CamundaClient
         );
 
         if ($response->status() === 200) {
-            return (new VariablesCaster(['array'], Variable::class))->cast($response->json());
+            $raws = $response->json();
+            $variables = [];
+            foreach ($raws as $name => $raw) {
+                $raw['name'] = $name;
+                $variables[$name] = Variable::from($raw);
+            }
+
+            return $variables;
         }
 
         throw new CamundaException($response->body(), $response->status());

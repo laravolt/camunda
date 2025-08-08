@@ -13,47 +13,48 @@ class ProcessInstanceClient extends CamundaClient
     public static function get(array $parameters = []): array
     {
         $instances = [];
-        if (!$parameters) {
+        if (! $parameters) {
             $res = self::make()->get('process-instance');
         } else {
             $res = self::make()->post('process-instance', $parameters);
         }
         foreach ($res->json() as $res) {
-            $instances[] = new ProcessInstance($res);
+            $instances[] = ProcessInstance::from($res);
         }
 
         return $instances;
     }
 
+    /**
+     * Get process instances by variables.
+     *
+     * @param array $variables
+     * $variables format:
+     *   $variables = [
+     *        [
+     *           'name' => 'varname',
+     *           'operator' => "eq",
+     *           'value' => 'varvalue',
+     *        ],
+     *    ];
+     *  `operator` can only contain `eq`, `neq`, `gt`, `gte`, `lt`, `lte`.
+     *
+     * @return ProcessInstance[]
+     */
     public static function getByVariables(array $variables = []): array
     {
-        /**
-         *  $variables = [
-         *       [
-         *          'name' => 'varname',
-         *          'operator' => "eq",
-         *          'value' => 'varvalue',
-         *       ],
-         *   ];
-         */
-
-        /**
-         * `operator` can only contain `eq`, `neq`, `gt`, `gte`, `lt`, `lte`
-         * Check Camunda documentation for more information
-         */
-
         $instances = [];
 
-        if (!$variables) {
+        if (! $variables) {
             $res = self::make()->get('process-instance');
         } else {
             $res = self::make()->post('process-instance', [
-                'variables' => $variables
+                'variables' => $variables,
 
             ]);
         }
         foreach ($res->json() as $res) {
-            $instances[] = new ProcessInstance($res);
+            $instances[] = ProcessInstance::from($res);
         }
 
         return $instances;
@@ -67,44 +68,49 @@ class ProcessInstanceClient extends CamundaClient
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        return new ProcessInstance($response->json());
+        return ProcessInstance::from($response->json());
     }
-
 
     public static function findByBusniessKey(string $businessKey): ProcessInstance
     {
-
         $response = self::make()->post("process-instance", [
-            'businessKey' => $businessKey
+            'businessKey' => $businessKey,
         ]);
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        $data =  $response->json();
+        $data = $response->json();
 
-        if (sizeof($data) ==  0) {
+        if (count($data) == 0) {
             throw new ObjectNotFoundException("Process Instance Not Found");
         }
 
-        return new ProcessInstance($data[sizeof($data) - 1]);
+        return ProcessInstance::from($data[count($data) - 1]);
     }
 
     public static function variables(string $id): array
     {
         $variables = self::make()->get("process-instance/$id/variables", ['deserializeValues' => false])->json();
 
-        return collect($variables)->mapWithKeys(
+        $temp = collect($variables)->mapWithKeys(
             fn ($data, $name) => [
                 $name => new Variable(
                     name: $name,
-                    value: $data['value'],
                     type: $data['type'],
+                    value: $data['value'],
                     valueInfo: $data['valueInfo'] ?? []
                 ),
             ]
-        )->toArray();
+        );
+
+        $result = [];
+        foreach ($temp as $name => $value) {
+            $result[$name] = $value;
+        }
+
+        return $result;
     }
 
     public static function delete(string $id): bool

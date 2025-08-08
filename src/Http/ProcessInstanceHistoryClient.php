@@ -22,7 +22,7 @@ class ProcessInstanceHistoryClient extends CamundaClient
     {
         $instances = [];
         foreach (self::make()->get('history/process-instance', $parameters)->json() as $res) {
-            $instances[] = new ProcessInstanceHistory($res);
+            $instances[] = ProcessInstanceHistory::from($res);
         }
 
         return $instances;
@@ -42,7 +42,7 @@ class ProcessInstanceHistoryClient extends CamundaClient
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        return new ProcessInstanceHistory($response->json());
+        return ProcessInstanceHistory::from($response->json());
     }
 
     public static function variables(string $id): array

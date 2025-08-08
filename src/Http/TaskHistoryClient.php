@@ -18,7 +18,7 @@ class TaskHistoryClient extends CamundaClient
                 throw new ObjectNotFoundException(sprintf('Cannot find task history with ID = %s', $id));
             }
 
-            return new TaskHistory(Arr::first($response->json()));
+            return TaskHistory::from(Arr::first($response->json()));
         }
 
         throw new CamundaException($response->json('message') ?? $response->body());
@@ -44,7 +44,7 @@ class TaskHistoryClient extends CamundaClient
         if ($response->successful()) {
             $data = collect();
             foreach ($response->json() as $task) {
-                $data->push(new TaskHistory($task));
+                $data->push(TaskHistory::from($task));
             }
 
             return $data->sortBy('endTime')->toArray();

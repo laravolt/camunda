@@ -20,7 +20,6 @@ class ProcessInstance extends Data
         public bool $ended,
         public bool $suspended,
         public ?string $tenantId = null,
-        #[WithCast(VariablesCaster::class, Variable::class)] // TODO: is this possible?
         public ?array $variables = [],
     ) {}
 }

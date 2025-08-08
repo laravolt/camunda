@@ -124,7 +124,6 @@ class ProcessInstanceTest extends TestCase
         $variables = ['title' => ['value' => 'Foo', 'type' => 'string']];
         $processInstance = ProcessDefinitionClient::start(key: 'process_1', variables: $variables);
         $variables = ProcessInstanceClient::variables($processInstance->id);
-
         $this->assertCount(1, $variables);
         $this->assertInstanceOf(Variable::class, $variables['title']);
         $this->assertEquals('String', $variables['title']->type);

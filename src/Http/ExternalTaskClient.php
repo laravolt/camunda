@@ -41,7 +41,7 @@ class ExternalTaskClient extends CamundaClient
         $data = [];
         if ($response->successful()) {
             foreach ($response->json() as $task) {
-                $data[] = new ExternalTask($task);
+                $data[] = ExternalTask::from($task);
             }
         }
 
@@ -59,7 +59,7 @@ class ExternalTaskClient extends CamundaClient
         $data = [];
         if ($response->successful()) {
             foreach ($response->json() as $task) {
-                $data[] = new ExternalTask($task);
+                $data[] = ExternalTask::from($task);
             }
         }
 
@@ -87,7 +87,7 @@ class ExternalTaskClient extends CamundaClient
         if ($response->successful()) {
             $data = [];
             foreach ($response->json() as $raw) {
-                $data[] = new ExternalTask($raw);
+                $data[] = ExternalTask::from($raw);
             }
 
             return $data;
