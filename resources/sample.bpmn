@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1q99ybn" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.14.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1q99ybn" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.14.0">
   <bpmn:collaboration id="Collaboration_1ko6c8h">
     <bpmn:participant id="Participant_1x5l492" name="Test Process" processRef="process_1" />
   </bpmn:collaboration>
-  <bpmn:process id="process_1" isExecutable="true">
+  <bpmn:process id="process_1" isExecutable="true" camunda:historyTimeToLive="P1D">
     <bpmn:startEvent id="start" name="start">
       <bpmn:outgoing>Flow_02wkiqx</bpmn:outgoing>
     </bpmn:startEvent>

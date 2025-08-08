@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1q99ybn" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.6.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1q99ybn" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.36.1">
   <bpmn:collaboration id="proses_rekrutmen_sederhana">
     <bpmn:participant id="Participant_04ghwxp" name="Company" processRef="process_1" />
   </bpmn:collaboration>
-  <bpmn:process id="process_1" isExecutable="true">
+  <bpmn:process id="process_1" isExecutable="true" camunda:historyTimeToLive="P1D">
     <bpmn:laneSet id="LaneSet_0itlol0" />
     <bpmn:userTask id="review_administrasi" name="Review surat lamaran dan kelengkapan administrasi">
       <bpmn:extensionElements>
@@ -94,6 +94,42 @@
       <bpmndi:BPMNShape id="Participant_04ghwxp_di" bpmnElement="Participant_04ghwxp" isHorizontal="true">
         <dc:Bounds x="120" y="80" width="1130" height="560" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0aacaf0_di" bpmnElement="review_administrasi">
+        <dc:Bounds x="280" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_09b4ded_di" bpmnElement="Gateway_09b4ded" isMarkerVisible="true">
+        <dc:Bounds x="435" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="158" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start_input_lamaran">
+        <dc:Bounds x="172" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="160" y="245" width="62" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1v8jrvk_di" bpmnElement="wawancara">
+        <dc:Bounds x="410" y="310" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1v7ww7m_di" bpmnElement="Gateway_1v7ww7m" isMarkerVisible="true">
+        <dc:Bounds x="575" y="325" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="558" y="288" width="86" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1opnwwy_di" bpmnElement="end_diterima">
+        <dc:Bounds x="902" y="482" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="876" y="525" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1gdyd0i_di" bpmnElement="end_ditolak">
+        <dc:Bounds x="902" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="948" y="337" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_19x83oz_di" bpmnElement="Flow_19x83oz">
         <di:waypoint x="510" y="350" />
         <di:waypoint x="575" y="350" />
@@ -136,42 +172,6 @@
           <dc:Bounds x="609" y="435" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Activity_0aacaf0_di" bpmnElement="review_administrasi">
-        <dc:Bounds x="280" y="180" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_09b4ded_di" bpmnElement="Gateway_09b4ded" isMarkerVisible="true">
-        <dc:Bounds x="435" y="195" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="428" y="158" width="64" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start_input_lamaran">
-        <dc:Bounds x="172" y="202" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="160" y="245" width="62" height="53" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1v8jrvk_di" bpmnElement="wawancara">
-        <dc:Bounds x="410" y="310" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1gdyd0i_di" bpmnElement="end_ditolak">
-        <dc:Bounds x="902" y="332" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="948" y="337" width="81" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1v7ww7m_di" bpmnElement="Gateway_1v7ww7m" isMarkerVisible="true">
-        <dc:Bounds x="575" y="325" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="558" y="288" width="86" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1opnwwy_di" bpmnElement="end_diterima">
-        <dc:Bounds x="902" y="482" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="876" y="525" width="88" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
