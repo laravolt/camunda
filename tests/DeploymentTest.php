@@ -89,6 +89,8 @@ class DeploymentTest extends TestCase
 
         $deployment = new \Laravolt\Camunda\Dto\Deployment(
             id: 'invalid-id',
+            tenantId: null,
+            source: null,
             name: 'test',
             deploymentTime: now(),
             processDefinitions: []

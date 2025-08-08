@@ -11,7 +11,7 @@ class Deployment extends Data
 {
     public function __construct(
         public string $id,
-        public ?string $tenantId,
+        public ?string $tenantId = null,
         public ?string $name,
         public ?string $source,
         #[WithCast(CarbonCaster::class)]

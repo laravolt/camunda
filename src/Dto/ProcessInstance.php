@@ -14,6 +14,7 @@ class ProcessInstance extends Data
         public array $links,
         public string $id,
         public string $definitionId,
+        public ?string $definitionKey,
         public ?string $businessKey,
         public ?string $caseInstanceId,
         public bool $ended,

@@ -35,5 +35,6 @@ class Task extends Data
         public ?string $formKey = null,
         public ?array $camundaFormRef = null,
         public ?string $tenantId = null,
+        public ?string $taskState = null,
     ) {}
 }

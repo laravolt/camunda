@@ -37,7 +37,7 @@ class DeploymentClient extends CamundaClient
             throw new ParseException($response->json('message'));
         }
 
-        return new Deployment($response->json());
+        return Deployment::from($response->json());
     }
 
     public static function find(string $id): Deployment
@@ -48,7 +48,7 @@ class DeploymentClient extends CamundaClient
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        return new Deployment($response->json());
+        return Deployment::from($response->json());
     }
 
     public static function get(array $parameters = []): array
@@ -56,7 +56,7 @@ class DeploymentClient extends CamundaClient
         $response = self::make()->get('deployment', $parameters);
         $result = [];
         foreach ($response->json() as $data) {
-            $result[] = new Deployment($data);
+            $result[] = Deployment::from($data);
         }
 
         return $result;

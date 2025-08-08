@@ -34,5 +34,6 @@ class ProcessInstanceHistory extends Data
         public ?string $caseInstanceId,
         public ?string $tenantId,
         public string $state,
+        public ?string $restartedProcessInstanceId,
     ) {}
 }

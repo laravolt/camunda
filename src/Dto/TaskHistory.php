@@ -41,5 +41,6 @@ class TaskHistory extends Data
         #[WithCast(CarbonCaster::class)]
         public ?Carbon $removalTime,
         public string $rootProcessInstanceId,
+        public ?string $taskState,
     ) {}
 }

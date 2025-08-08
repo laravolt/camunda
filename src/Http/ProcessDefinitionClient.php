@@ -34,7 +34,7 @@ class ProcessDefinitionClient extends CamundaClient
         $path = self::makeIdentifierPath('process-definition/{identifier}/start', $args);
         $response = self::make()->post($path, $payload);
         if ($response->successful()) {
-            return new ProcessInstance($response->json());
+            return ProcessInstance::from($response->json());
         }
 
         throw new InvalidArgumentException($response->body());
@@ -51,7 +51,7 @@ class ProcessDefinitionClient extends CamundaClient
     {
         $processDefinition = [];
         foreach (self::make()->get('process-definition', $parameters)->json() as $res) {
-            $processDefinition[] = new ProcessDefinition($res);
+            $processDefinition[] = ProcessDefinition::from($res);
         }
 
         return $processDefinition;
@@ -65,6 +65,6 @@ class ProcessDefinitionClient extends CamundaClient
             throw new ObjectNotFoundException($response->json('message'));
         }
 
-        return new ProcessDefinition($response->json());
+        return ProcessDefinition::from($response->json());
     }
 }
