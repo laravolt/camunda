@@ -12,7 +12,15 @@ class CamundaClient
 {
     public static function make(): PendingRequest
     {
-        return Http::baseUrl(config('services.camunda.url'));
+        $request = Http::baseUrl(config('services.camunda.url'));
+
+        $user = config('services.camunda.user');
+        $password = config('services.camunda.password');
+        if ($user && $password) {
+            $request->withBasicAuth($user, $password);
+        }
+
+        return $request;
     }
 
     protected static function makeIdentifierPath(string $path, array $args): string
