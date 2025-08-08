@@ -40,6 +40,20 @@ class ExternalTaskTest extends TestCase
         $this->assertTrue($completed);
     }
 
+    public function test_lock_individual_task()
+    {
+        $process = $this->createExternalProcess();
+        $topics = [
+            ['topicName' => 'pdf', 'lockDuration' => 600_000]
+        ];
+        $externalTasks = ExternalTaskClient::getByProcessInstanceId($process->id);
+        $this->assertCount(1, $externalTasks);
+        $task = $externalTasks[0];
+        ExternalTaskClient::lock($task->id, 'worker1', 600_000);
+        $lockedTasks = ExternalTaskClient::getTaskLocked();
+        $this->assertCount(1, $lockedTasks);
+    }
+
     public function test_complete_task_with_variables()
     {
         $processInstance = $this->createExternalProcess();
