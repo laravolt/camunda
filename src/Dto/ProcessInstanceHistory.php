@@ -19,6 +19,8 @@ class ProcessInstanceHistory extends DataTransferObject
 
     public ?string $superProcessInstanceId;
 
+    public ?string $restartedProcessInstanceId;
+
     public ?string $superCaseInstanceId;
 
     public ?string $caseInstanceId;

@@ -22,6 +22,8 @@ class ProcessInstance extends DataTransferObject
 
     public string $definitionId;
 
+    public ?string $definitionKey;
+
     public ?string $caseInstanceId;
 
     public bool $ended;

@@ -45,6 +45,8 @@ class Task extends DataTransferObject
 
     public string $taskDefinitionKey;
 
+    public string|null $taskState;
+
     public string|null $caseExecutionId;
 
     public string|null $caseInstanceId;

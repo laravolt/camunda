@@ -61,6 +61,8 @@ class TaskHistory extends DataTransferObject
 
     public ?string $tenantId;
 
+    public ?string $taskState;
+
     #[CastWith(CarbonCaster::class)]
     public ?Carbon $removalTime;
 
