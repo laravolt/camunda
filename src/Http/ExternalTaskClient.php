@@ -141,6 +141,13 @@ class ExternalTaskClient extends CamundaClient
         return $isSuccessful;
     }
 
+    public static function lock(string $id, string $workerId, int $duration): bool
+    {
+        $response =
+            self::make()->post("external-task/$id/lock", ['workerId' => $workerId, 'lockDuration' => $duration]);
+
+        return $response->status() === 204;
+    }
 
     public static function unlock(string $id): bool
     {
