@@ -38,12 +38,13 @@ class BpmnReader
                         'properties' => $properties,
                     ];
                 }
-                $form = [
-                    'id' => (string) $node->attributes()->id,
-                    'label' => (string) $node->attributes()->name,
-                    'fields' => $formFields,
-                ];
-                $forms[] = $form;
+                if (!empty($formFields)) {
+                    $forms[] = [
+                        'id' => (string) $node->attributes()->id,
+                        'label' => (string) $node->attributes()->name,
+                        'fields' => $formFields,
+                    ];
+                }
             } catch (\ErrorException $exception) {
             }
         }
