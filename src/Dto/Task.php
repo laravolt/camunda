@@ -3,8 +3,8 @@
 namespace Laravolt\Camunda\Dto;
 
 use Illuminate\Support\Carbon;
-use Laravolt\Camunda\Dto\Casters\CarbonCaster;
 use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 use Spatie\LaravelData\Data;
 
 class Task extends Data
@@ -13,11 +13,11 @@ class Task extends Data
         public string $id,
         public string $name,
         public ?string $assignee,
-        #[WithCast(CarbonCaster::class)]
+        #[WithCast(DateTimeInterfaceCast::class, format: ['Y-m-d\TH:i:s.vO', 'Y-m-d\TH:i:sP'])]
         public Carbon $created,
         public ?string $due,
         public ?string $followUp,
-        #[WithCast(CarbonCaster::class)]
+        #[WithCast(DateTimeInterfaceCast::class, format: ['Y-m-d\TH:i:s.vO', 'Y-m-d\TH:i:sP'])]
         public ?Carbon $lastUpdated,
         public ?string $delegationState,
         public ?string $description,

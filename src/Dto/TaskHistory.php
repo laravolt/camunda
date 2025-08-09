@@ -3,8 +3,8 @@
 namespace Laravolt\Camunda\Dto;
 
 use Illuminate\Support\Carbon;
-use Laravolt\Camunda\Dto\Casters\CarbonCaster;
 use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 use Spatie\LaravelData\Data;
 
 class TaskHistory extends Data
@@ -25,20 +25,19 @@ class TaskHistory extends Data
         public ?string $deleteReason,
         public ?string $owner,
         public ?string $assignee,
-        #[WithCast(CarbonCaster::class)]
+        #[WithCast(DateTimeInterfaceCast::class, format: 'Y-m-d\TH:i:s.vO')]
         public Carbon $startTime,
-        #[WithCast(CarbonCaster::class)]
+        #[WithCast(DateTimeInterfaceCast::class, format: 'Y-m-d\TH:i:s.vO')]
         public ?Carbon $endTime,
         public ?int $duration,
         public string $taskDefinitionKey,
         public int $priority,
-        #[WithCast(CarbonCaster::class)]
+        #[WithCast(DateTimeInterfaceCast::class, format: 'Y-m-d\TH:i:s.vO')]
         public ?Carbon $due,
         public ?string $parentTaskId,
-        #[WithCast(CarbonCaster::class)]
         public ?Carbon $followUp,
         public ?string $tenantId,
-        #[WithCast(CarbonCaster::class)]
+        #[WithCast(DateTimeInterfaceCast::class, format: 'Y-m-d\TH:i:s.vO')]
         public ?Carbon $removalTime,
         public string $rootProcessInstanceId,
         public ?string $taskState,

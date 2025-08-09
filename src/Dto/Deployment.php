@@ -3,18 +3,17 @@
 namespace Laravolt\Camunda\Dto;
 
 use Illuminate\Support\Carbon;
-use Laravolt\Camunda\Dto\Casters\CarbonCaster;
 use Spatie\LaravelData\Attributes\WithCast;
+use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 use Spatie\LaravelData\Data;
 
 class Deployment extends Data
 {
     public function __construct(
         public string $id,
-        public ?string $tenantId = null,
         public ?string $name,
         public ?string $source,
-        #[WithCast(CarbonCaster::class)]
+        #[WithCast(DateTimeInterfaceCast::class, format: 'Y-m-d\TH:i:s.vO')]
         public Carbon $deploymentTime,
         public ?array $processDefinitions = [],
         public ?array $links = [],
@@ -22,5 +21,6 @@ class Deployment extends Data
         public ?array $deployedCaseDefinitions = [],
         public ?array $deployedDecisionDefinitions = [],
         public ?array $deployedDecisionRequirementsDefinitions = [],
+        public ?string $tenantId = null,
     ) {}
 }

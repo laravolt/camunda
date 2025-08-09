@@ -2,7 +2,6 @@
 
 namespace Laravolt\Camunda\Http;
 
-use Laravolt\Camunda\Dto\Casters\VariablesCaster;
 use Laravolt\Camunda\Dto\Task;
 use Laravolt\Camunda\Dto\Variable;
 use Laravolt\Camunda\Exceptions\CamundaException;
