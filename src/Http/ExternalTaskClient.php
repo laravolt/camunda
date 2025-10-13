@@ -4,6 +4,7 @@ namespace Laravolt\Camunda\Http;
 
 use Laravolt\Camunda\Dto\ExternalTask;
 use Laravolt\Camunda\Exceptions\CamundaException;
+use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Exceptions\UnexpectedResponseException;
 
 class ExternalTaskClient extends CamundaClient
@@ -26,6 +27,17 @@ class ExternalTaskClient extends CamundaClient
             'job' => is_string($job) ? $job : $job['job'] ?? null,
             'lockDuration' => $job['lockDuration'] ?? 600_000,
         ];
+    }
+
+    public static function find(string $id): ExternalTask
+    {
+        $response = self::make()->get("external-task/$id");
+
+        if ($response->status() === 404) {
+            throw new ObjectNotFoundException($response->json('message'));
+        }
+
+        return ExternalTask::from($response->json());
     }
 
     /**
