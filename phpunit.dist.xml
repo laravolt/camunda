@@ -26,6 +26,9 @@
         <include>
             <directory suffix=".php">src</directory>
         </include>
+        <exclude>
+            <file>src/ServiceProvider.php</file>
+        </exclude>
     </source>
     <php>
         <env name="APP_NAME" value="Laravolt Camunda Package"/>
