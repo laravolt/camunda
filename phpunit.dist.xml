@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-         printerClass="Sempro\PHPUnitPrettyPrinter\PrettyPrinterForPhpUnit9"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory=".phpunit.cache"
          colors="true"
-         bootstrap="vendor/autoload.php">
-    <coverage>
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
-        <exclude>
-            <file>src/ServiceProvider.php</file>
-        </exclude>
-    </coverage>
+         failOnDeprecation="true"
+         failOnNotice="true"
+         failOnWarning="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true">
     <testsuites>
-        <testsuite name="Laravaolt Camunda Test Suite">
+        <testsuite name="Laravolt Camunda Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-
+    <!--
+        Only issues caused by our own code count for failOn*:
+        - restrictNotices / restrictWarnings: only notices/warnings raised in src/.
+        - ignoreIndirectDeprecations: deprecations triggered by vendor code calling vendor code are
+          ignored (PHPUnit >= 11 replacement of the old restrictDeprecations attribute). Deprecations
+          triggered in src/ (self) or by src/ calling a deprecated vendor API (direct) still fail the run.
+    -->
+    <source ignoreIndirectDeprecations="true" restrictNotices="true" restrictWarnings="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
     <php>
         <env name="APP_NAME" value="Laravolt Camunda Package"/>
         <env name="APP_ENV" value="test"/>
-        <env name="CAMUNDA_URL" value="http://localhost:8080/engine-rest/"/>
+        <!-- Integration tests (#[Group('integration')]) are skipped while CAMUNDA_URL is empty.
+             Run them with e.g. CAMUNDA_URL=http://localhost:8080/engine-rest/ composer test:integration -->
+        <env name="CAMUNDA_URL" value=""/>
     </php>
-
 </phpunit>
