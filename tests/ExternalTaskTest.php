@@ -6,8 +6,10 @@ use Laravolt\Camunda\Http\DeploymentClient;
 use Laravolt\Camunda\Http\ExternalTaskClient;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
 use Laravolt\Camunda\Http\ProcessInstanceHistoryClient;
+use PHPUnit\Framework\Attributes\Group;
 
-class ExternalTaskTest extends TestCase
+#[Group('integration')]
+class ExternalTaskTest extends IntegrationTestCase
 {
     protected function setUp(): void
     {

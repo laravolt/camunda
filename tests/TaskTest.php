@@ -9,8 +9,10 @@ use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
 use Laravolt\Camunda\Http\TaskClient;
 use Laravolt\Camunda\Http\TaskHistoryClient;
+use PHPUnit\Framework\Attributes\Group;
 
-class TaskTest extends TestCase
+#[Group('integration')]
+class TaskTest extends IntegrationTestCase
 {
     protected function setUp(): void
     {

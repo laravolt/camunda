@@ -5,8 +5,10 @@ namespace Laravolt\Camunda\Tests;
 use Laravolt\Camunda\Collections\VariableCollection;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
 use Laravolt\Camunda\Http\ProcessInstanceClient;
+use PHPUnit\Framework\Attributes\Group;
 
-class VariableTest extends TestCase
+#[Group('integration')]
+class VariableTest extends IntegrationTestCase
 {
     protected function setUp(): void
     {

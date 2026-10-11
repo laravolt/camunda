@@ -3,8 +3,10 @@
 namespace Laravolt\Camunda\Tests;
 
 use Laravolt\Camunda\Http\CamundaClient;
+use PHPUnit\Framework\Attributes\Group;
 
-class CamundaClientTest extends TestCase
+#[Group('integration')]
+class CamundaClientTest extends IntegrationTestCase
 {
     public function test_call_valid_endpoint(): void
     {
