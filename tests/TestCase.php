@@ -20,6 +20,10 @@ class TestCase extends \Orchestra\Testbench\TestCase
         // failOnDeprecation would silently pass. Hand PHP errors back to PHPUnit's handler so the
         // <source> filter in phpunit.dist.xml decides what fails. Laravel restores all handlers
         // in tearDown() (HandleExceptions::flushHandlersState()).
+        //
+        // Note: PHPUnit\Runner\ErrorHandler::instance() is internal PHPUnit API (@internal), not
+        // covered by PHPUnit's backward-compatibility promise. The CI matrix runs PHPUnit 11, 12
+        // and 13 (prefer-lowest / prefer-stable), so a breaking change there shows up as a failure.
         set_error_handler(ErrorHandler::instance());
     }
 

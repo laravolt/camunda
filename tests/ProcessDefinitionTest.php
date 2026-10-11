@@ -13,7 +13,11 @@ class ProcessDefinitionTest extends IntegrationTestCase
 {
     protected function tearDown(): void
     {
-        $this->truncateDeployment();
+        try {
+            $this->truncateDeployment();
+        } finally {
+            parent::tearDown();
+        }
     }
 
     public function test_start_new_process_instance(): void

@@ -12,7 +12,11 @@ class DeploymentTest extends IntegrationTestCase
 {
     protected function tearDown(): void
     {
-        $this->truncateDeployment(cascade: false);
+        try {
+            $this->truncateDeployment(cascade: false);
+        } finally {
+            parent::tearDown();
+        }
     }
 
     public function test_deploy_bpmn(): void

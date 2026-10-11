@@ -101,7 +101,11 @@ class ExternalTaskTest extends IntegrationTestCase
 
     protected function tearDown(): void
     {
-        $this->truncateDeployment();
+        try {
+            $this->truncateDeployment();
+        } finally {
+            parent::tearDown();
+        }
     }
 
     private function createExternalProcess(): \Laravolt\Camunda\Dto\ProcessInstance

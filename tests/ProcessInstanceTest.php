@@ -145,6 +145,10 @@ class ProcessInstanceTest extends IntegrationTestCase
 
     protected function tearDown(): void
     {
-        $this->truncateDeployment();
+        try {
+            $this->truncateDeployment();
+        } finally {
+            parent::tearDown();
+        }
     }
 }
