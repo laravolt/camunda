@@ -9,7 +9,7 @@
 | PHP | >= 8.1 | ^8.2 (tested on 8.2 – 8.5) |
 | Laravel | not declared (tested on 10.x) | 12.x or 13.x (Laravel 13 needs PHP >= 8.3) |
 | spatie/laravel-data | ^3.0 \| ^4.0 | ^4.14 |
-| guzzlehttp/guzzle | ^7.2 | ^7.8.2 \| ^8.0 |
+| guzzlehttp/guzzle | ^7.2 | no longer required directly (installed through `illuminate/http`) |
 
 ### Dropped
 
