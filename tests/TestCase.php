@@ -5,10 +5,27 @@ namespace Laravolt\Camunda\Tests;
 use Laravolt\Camunda\Dto\Deployment;
 use Laravolt\Camunda\Http\DeploymentClient;
 use Orchestra\Testbench\Concerns\WithWorkbench;
+use PHPUnit\Runner\ErrorHandler;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
     use WithWorkbench;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Laravel's HandleExceptions bootstrapper routes E_DEPRECATED / E_USER_DEPRECATED to the
+        // "deprecations" log channel while testing, so PHPUnit never sees them and
+        // failOnDeprecation would silently pass. Hand PHP errors back to PHPUnit's handler so the
+        // <source> filter in phpunit.dist.xml decides what fails. Laravel restores all handlers
+        // in tearDown() (HandleExceptions::flushHandlersState()).
+        //
+        // Note: PHPUnit\Runner\ErrorHandler::instance() is internal PHPUnit API (@internal), not
+        // covered by PHPUnit's backward-compatibility promise. The CI matrix runs PHPUnit 11, 12
+        // and 13 (prefer-lowest / prefer-stable), so a breaking change there shows up as a failure.
+        set_error_handler(ErrorHandler::instance());
+    }
 
     /**
      * Define environment setup.
@@ -34,8 +51,13 @@ class TestCase extends \Orchestra\Testbench\TestCase
         return DeploymentClient::create('process_1', $files);
     }
 
-    protected function truncateDeployment(): void
+    protected function truncateDeployment(bool $cascade = true): void
     {
-        DeploymentClient::truncate(true);
+        // tearDown() still runs when setUp() skipped the test; nothing to clean up then.
+        if (! IntegrationTestCase::camundaConfigured()) {
+            return;
+        }
+
+        DeploymentClient::truncate($cascade);
     }
 }

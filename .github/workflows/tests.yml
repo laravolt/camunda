@@ -1,0 +1,115 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.dependency-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4', '8.5']
+        laravel: ['12.*', '13.*']
+        dependency-version: [prefer-lowest, prefer-stable]
+        include:
+          - laravel: '12.*'
+            testbench: '^10.0'
+          - laravel: '13.*'
+            testbench: '^11.0'
+        exclude:
+          # Laravel 13 / orchestra/testbench 11 require PHP ^8.3.
+          - php: '8.2'
+            laravel: '13.*'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: simplexml, dom, curl, mbstring
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      # prefer-lowest must test the floor declared in composer.json. Since Composer 2.9 the default
+      # security blocking skips releases with advisories, which silently moves the "lowest" versions
+      # up over time. Disable it for prefer-lowest only; prefer-stable keeps the default blocking.
+      - name: Install dependencies
+        run: |
+          composer require "orchestra/testbench:${{ matrix.testbench }}" --dev --no-update --no-interaction
+          composer update --${{ matrix.dependency-version }} ${{ matrix.dependency-version == 'prefer-lowest' && '--no-security-blocking' || '' }} --prefer-dist --no-interaction --no-progress
+
+      - name: Installed versions
+        run: |
+          composer show --direct
+          composer show laravel/framework | grep -E '^versions'
+
+      # One file per `php -l` call: linting several files in one invocation only works on PHP >= 8.3;
+      # PHP 8.2 lints just the first file of each batch.
+      - name: Lint src/ for compile-time deprecations
+        run: |
+          out=$(find src -name '*.php' -print0 | xargs -0 -n 1 php -d error_reporting=-1 -d display_errors=stderr -l 2>&1 >/dev/null | grep -E 'Deprecated|Parse error' || true)
+          if [ -n "$out" ]; then echo "$out"; exit 1; fi
+
+      - name: Run tests (without Camunda server)
+        run: vendor/bin/phpunit --exclude-group integration
+
+  integration:
+    name: Integration - Camunda 7.24 - PHP 8.4 - Laravel 13
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Make this job required once the first run is green: the 52 integration tests have never
+    # been run against Camunda 7.24, so a failure here must not block PRs yet.
+    continue-on-error: true
+
+    services:
+      camunda:
+        image: camunda/camunda-bpm-platform:run-7.24.0
+        ports:
+          - 8080:8080
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: simplexml, dom, curl, mbstring
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: |
+          composer require "orchestra/testbench:^11.0" --dev --no-update --no-interaction
+          composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+
+      - name: Wait for Camunda REST API (max 180 s)
+        run: |
+          for i in $(seq 1 36); do
+            if curl -fs http://localhost:8080/engine-rest/version; then echo; exit 0; fi
+            sleep 5
+          done
+          echo "Camunda REST API not ready after 180 s" >&2
+          exit 1
+
+      - name: Run integration tests
+        env:
+          CAMUNDA_URL: http://localhost:8080/engine-rest/
+        run: composer test:integration
