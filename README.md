@@ -6,11 +6,10 @@ Convenience Laravel HTTP client wrapper to interact with Camunda REST API.
 
 | laravolt/camunda | PHP       | Laravel     | spatie/laravel-data |
 |------------------|-----------|-------------|---------------------|
-| 3.x              | 8.2 – 8.5 | 12.x, 13.x¹ | ^4.14               |
-| 2.x              | ≥ 8.1     | 10.x²       | ^3.0 \| ^4.0        |
+| 3.x              | 8.3 – 8.5 | 12.x, 13.x  | ^4.23               |
+| 2.x              | ≥ 8.1     | 10.x¹       | ^3.0 \| ^4.0        |
 
-¹ Laravel 13 itself requires PHP ≥ 8.3.
-² 2.x does not declare an `illuminate/*` constraint; its test suite only ran against Laravel 10.
+¹ 2.x does not declare an `illuminate/*` constraint; its test suite only ran against Laravel 10.
 
 Upgrading from 2.x? See [UPGRADE.md](UPGRADE.md).
 
