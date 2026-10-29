@@ -13,16 +13,16 @@
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "ext-simplexml": "*",
         "illuminate/console": "^12.0|^13.0",
         "illuminate/http": "^12.0|^13.0",
         "illuminate/support": "^12.0|^13.0",
-        "spatie/laravel-data": "^4.14"
+        "spatie/laravel-data": "^4.23"
     },
     "require-dev": {
         "orchestra/testbench": "^10.0|^11.0",
-        "phpunit/phpunit": "^11.5.3|^12.0.1|^13.0"
+        "phpunit/phpunit": "^12.5|^13.4"
     },
     "autoload": {
         "psr-4": {
