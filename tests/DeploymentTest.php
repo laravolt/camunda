@@ -5,12 +5,18 @@ namespace Laravolt\Camunda\Tests;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Exceptions\ParseException;
 use Laravolt\Camunda\Http\DeploymentClient;
+use PHPUnit\Framework\Attributes\Group;
 
-class DeploymentTest extends TestCase
+#[Group('integration')]
+class DeploymentTest extends IntegrationTestCase
 {
     protected function tearDown(): void
     {
-        DeploymentClient::truncate();
+        try {
+            $this->truncateDeployment(cascade: false);
+        } finally {
+            parent::tearDown();
+        }
     }
 
     public function test_deploy_bpmn(): void

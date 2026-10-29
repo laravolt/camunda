@@ -7,8 +7,10 @@ use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
 use Laravolt\Camunda\Http\ProcessInstanceClient;
 use Nette\Utils\Random;
+use PHPUnit\Framework\Attributes\Group;
 
-class ProcessInstanceTest extends TestCase
+#[Group('integration')]
+class ProcessInstanceTest extends IntegrationTestCase
 {
     protected function setUp(): void
     {
@@ -143,6 +145,10 @@ class ProcessInstanceTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->truncateDeployment();
+        try {
+            $this->truncateDeployment();
+        } finally {
+            parent::tearDown();
+        }
     }
 }

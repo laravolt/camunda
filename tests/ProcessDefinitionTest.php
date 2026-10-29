@@ -6,12 +6,18 @@ use Laravolt\Camunda\Dto\ProcessDefinition;
 use Laravolt\Camunda\Exceptions\InvalidArgumentException;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
+use PHPUnit\Framework\Attributes\Group;
 
-class ProcessDefinitionTest extends TestCase
+#[Group('integration')]
+class ProcessDefinitionTest extends IntegrationTestCase
 {
     protected function tearDown(): void
     {
-        $this->truncateDeployment();
+        try {
+            $this->truncateDeployment();
+        } finally {
+            parent::tearDown();
+        }
     }
 
     public function test_start_new_process_instance(): void

@@ -2,6 +2,18 @@
 # laravolt/camunda
 Convenience Laravel HTTP client wrapper to interact with Camunda REST API.
 
+## Requirements
+
+| laravolt/camunda | PHP       | Laravel     | spatie/laravel-data |
+|------------------|-----------|-------------|---------------------|
+| 3.x              | 8.2 – 8.5 | 12.x, 13.x¹ | ^4.14               |
+| 2.x              | ≥ 8.1     | 10.x²       | ^3.0 \| ^4.0        |
+
+¹ Laravel 13 itself requires PHP ≥ 8.3.
+² 2.x does not declare an `illuminate/*` constraint; its test suite only ran against Laravel 10.
+
+Upgrading from 2.x? See [UPGRADE.md](UPGRADE.md).
+
 ## Installation
 `composer require laravolt/camunda`
 
@@ -249,3 +261,12 @@ echo $response->object(); // sdtClass
 echo $response->json(); // array, something like ["version" => "7.14.0"]
 ```
 > `CamundaClient::make()` is a wrapper for [Laravel HTTP Client](https://laravel.com/docs/master/http-client) with base URL already set based on your Camunda services configuration. Take a look at the documentation for more information.
+
+## Testing
+
+```bash
+composer test                # offline suite, integration tests excluded
+CAMUNDA_URL=http://localhost:8080/engine-rest/ composer test:integration   # needs a running Camunda 7 REST API
+```
+
+Tests in the `integration` group are skipped automatically while `CAMUNDA_URL` is empty.
