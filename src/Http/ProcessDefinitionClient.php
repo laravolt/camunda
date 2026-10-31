@@ -8,6 +8,7 @@ use Laravolt\Camunda\Dto\ProcessDefinition;
 use Laravolt\Camunda\Dto\ProcessInstance;
 use Laravolt\Camunda\Exceptions\InvalidArgumentException;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
+use Laravolt\Camunda\Exceptions\UnexpectedResponseException;
 
 class ProcessDefinitionClient extends CamundaClient
 {
@@ -43,8 +44,19 @@ class ProcessDefinitionClient extends CamundaClient
     public static function xml(...$args): string
     {
         $path = self::makeIdentifierPath(path: 'process-definition/{identifier}/xml', args: $args);
+        $response = self::make()->get($path);
 
-        return self::make()->get($path)->json('bpmn20Xml');
+        if ($response->status() === 404) {
+            throw new ObjectNotFoundException((string) $response->json('message'));
+        }
+
+        $xml = $response->json('bpmn20Xml');
+
+        if (! $response->successful() || ! is_string($xml)) {
+            throw UnexpectedResponseException::for($path, [], (array) $response->json());
+        }
+
+        return $xml;
     }
 
     public static function get(array $parameters = []): array

@@ -11,6 +11,7 @@ use Laravolt\Camunda\Dto\ProcessDefinition;
 use Laravolt\Camunda\Dto\ProcessInstance;
 use Laravolt\Camunda\Dto\Variable;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
+use Laravolt\Camunda\Exceptions\UnexpectedResponseException;
 use Laravolt\Camunda\Http\DeploymentClient;
 use Laravolt\Camunda\Http\ExternalTaskClient;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
@@ -54,6 +55,27 @@ class OfflineClientTest extends TestCase
 
         $this->expectException(ObjectNotFoundException::class);
         ProcessDefinitionClient::find(id: 'missing');
+    }
+
+    public function test_process_definition_xml_not_found(): void
+    {
+        Http::fake([
+            self::BASE.'/process-definition/key/missing/xml' => Http::response(['type' => 'InvalidRequestException', 'message' => 'No matching definition with key missing'], 404),
+        ]);
+
+        $this->expectException(ObjectNotFoundException::class);
+        $this->expectExceptionMessage('No matching definition with key missing');
+        ProcessDefinitionClient::xml(key: 'missing');
+    }
+
+    public function test_process_definition_xml_unexpected_response(): void
+    {
+        Http::fake([
+            self::BASE.'/process-definition/key/broken/xml' => Http::response(['type' => 'ProcessEngineException', 'message' => 'boom'], 500),
+        ]);
+
+        $this->expectException(UnexpectedResponseException::class);
+        ProcessDefinitionClient::xml(key: 'broken');
     }
 
     public function test_start_process_instance_with_variables(): void
