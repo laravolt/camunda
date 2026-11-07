@@ -10,7 +10,7 @@ class TenantClient extends CamundaClient
 {
     public static function find(string $id): Tenant
     {
-        $response = self::make()->get("tenant/$id");
+        $response = self::make()->get('tenant/'.self::segment($id));
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
@@ -46,7 +46,7 @@ class TenantClient extends CamundaClient
 
     public static function delete(string $id): bool
     {
-        $response = self::make()->delete("tenant/{$id}");
+        $response = self::make()->delete('tenant/'.self::segment($id));
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));

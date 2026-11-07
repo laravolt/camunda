@@ -62,7 +62,7 @@ class ProcessInstanceClient extends CamundaClient
 
     public static function find(string $id): ProcessInstance
     {
-        $response = self::make()->get("process-instance/$id");
+        $response = self::make()->get('process-instance/'.self::segment($id));
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
@@ -92,7 +92,7 @@ class ProcessInstanceClient extends CamundaClient
 
     public static function variables(string $id): array
     {
-        $variables = self::make()->get("process-instance/$id/variables", ['deserializeValues' => false])->json();
+        $variables = self::make()->get('process-instance/'.self::segment($id).'/variables', ['deserializeValues' => false])->json();
 
         $temp = collect($variables)->mapWithKeys(
             fn ($data, $name) => [
@@ -115,6 +115,6 @@ class ProcessInstanceClient extends CamundaClient
 
     public static function delete(string $id): bool
     {
-        return self::make()->delete("process-instance/$id")->status() === 204;
+        return self::make()->delete('process-instance/'.self::segment($id))->status() === 204;
     }
 }

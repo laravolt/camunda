@@ -25,6 +25,7 @@ class ProcessDefinitionClient extends CamundaClient
         $payload = [];
 
         if (!empty($variables)) {
+            self::guardVariables($variables);
             $payload['variables'] = $variables;
             $payload['withVariablesInReturn'] = true;
         }

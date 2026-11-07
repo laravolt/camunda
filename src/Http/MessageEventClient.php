@@ -30,6 +30,7 @@ class MessageEventClient extends CamundaClient
 
         $payload['messageName'] = $messageName;
         if (!empty($variables)) {
+            self::guardVariables($variables);
             $payload['variables'] = $variables;
             $payload['withVariablesInReturn'] = true;
         }

@@ -31,7 +31,7 @@ class ExternalTaskClient extends CamundaClient
 
     public static function find(string $id): ExternalTask
     {
-        $response = self::make()->get("external-task/$id");
+        $response = self::make()->get('external-task/'.self::segment($id));
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
@@ -48,7 +48,7 @@ class ExternalTaskClient extends CamundaClient
      */
     public static function getByProcessInstanceId(string $id): array
     {
-        $response = self::make()->get("external-task?processInstanceId=$id");
+        $response = self::make()->get('external-task', ['processInstanceId' => $id]);
 
         $data = [];
         if ($response->successful()) {
@@ -114,6 +114,8 @@ class ExternalTaskClient extends CamundaClient
         array $variables = [],
         array $localVariables = []
     ): bool {
+        self::guardVariables($variables);
+        self::guardVariables($localVariables);
         $payload = compact('workerId');
         if ($variables) {
             $payload['variables'] = $variables;
@@ -121,7 +123,7 @@ class ExternalTaskClient extends CamundaClient
         if ($localVariables) {
             $payload['localVariables'] = $localVariables;
         }
-        $url = "external-task/$id/complete";
+        $url = 'external-task/'.self::segment($id).'/complete';
         $response = self::make()->post($url, $payload);
         $isSuccessful = $response->status() === 204;
 
@@ -142,7 +144,7 @@ class ExternalTaskClient extends CamundaClient
     {
 
         $payload = compact('workerId', 'errorMessage', 'retryTimeout');
-        $url = "external-task/$id/failure";
+        $url = 'external-task/'.self::segment($id).'/failure';
         $response = self::make()->post($url, $payload);
         $isSuccessful = $response->status() === 204;
 
@@ -156,14 +158,14 @@ class ExternalTaskClient extends CamundaClient
     public static function lock(string $id, string $workerId, int $duration): bool
     {
         $response =
-            self::make()->post("external-task/$id/lock", ['workerId' => $workerId, 'lockDuration' => $duration]);
+            self::make()->post('external-task/'.self::segment($id).'/lock', ['workerId' => $workerId, 'lockDuration' => $duration]);
 
         return $response->status() === 204;
     }
 
     public static function unlock(string $id): bool
     {
-        $response = self::make()->post("external-task/$id/unlock");
+        $response = self::make()->post('external-task/'.self::segment($id).'/unlock');
 
         return $response->status() === 204;
     }

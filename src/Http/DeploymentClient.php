@@ -42,7 +42,7 @@ class DeploymentClient extends CamundaClient
 
     public static function find(string $id): Deployment
     {
-        $response = self::make()->get("deployment/$id");
+        $response = self::make()->get('deployment/'.self::segment($id));
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
@@ -73,7 +73,7 @@ class DeploymentClient extends CamundaClient
     public static function delete(string $id, bool $cascade = false): bool
     {
         $cascadeFlag = $cascade ? 'cascade=true' : '';
-        $response = self::make()->delete("deployment/{$id}?".$cascadeFlag);
+        $response = self::make()->delete('deployment/'.self::segment($id).'?'.$cascadeFlag);
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
