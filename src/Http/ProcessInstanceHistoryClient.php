@@ -36,7 +36,7 @@ class ProcessInstanceHistoryClient extends CamundaClient
      */
     public static function find(string $id): ProcessInstanceHistory
     {
-        $response = self::make()->get("history/process-instance/$id");
+        $response = self::make()->get('history/process-instance/'.self::segment($id));
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));

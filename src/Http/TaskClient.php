@@ -11,7 +11,7 @@ class TaskClient extends CamundaClient
 {
     public static function find(string $id): Task
     {
-        $response = self::make()->get("task/$id");
+        $response = self::make()->get('task/'.self::segment($id));
 
         if ($response->status() === 404) {
             throw new ObjectNotFoundException($response->json('message'));
@@ -28,7 +28,7 @@ class TaskClient extends CamundaClient
      */
     public static function getByProcessInstanceId(string $id): array
     {
-        $response = self::make()->get("task?processInstanceId=$id");
+        $response = self::make()->get('task', ['processInstanceId' => $id]);
 
         $data = [];
         if ($response->successful()) {
@@ -99,7 +99,7 @@ class TaskClient extends CamundaClient
 
     public static function claim(string $id,  string $userId): bool
     {
-        $response = self::make()->post("task/$id/claim", [
+        $response = self::make()->post('task/'.self::segment($id).'/claim', [
             "userId" => $userId
         ]);
 
@@ -112,7 +112,7 @@ class TaskClient extends CamundaClient
 
     public static function unclaim(string $id): bool
     {
-        $response = self::make()->post("task/$id/unclam");
+        $response = self::make()->post('task/'.self::segment($id).'/unclaim');
 
         if ($response->successful()) {
             return true;
@@ -123,7 +123,7 @@ class TaskClient extends CamundaClient
 
     public static function assign(string $id,  string $userId): bool
     {
-        $response = self::make()->post("task/$id/assignee", [
+        $response = self::make()->post('task/'.self::segment($id).'/assignee', [
             "userId" => $userId
         ]);
 
@@ -164,12 +164,13 @@ class TaskClient extends CamundaClient
 
     public static function submit(string $id, array $variables): bool
     {
+        self::guardVariables($variables);
         $varData = (object)[];
         if (!empty($variables)) {
             $varData = (object)$variables;
         }
         $response = self::make()->post(
-            "task/$id/submit-form",
+            'task/'.self::segment($id).'/submit-form',
             ['variables' => $varData]
         );
 
@@ -182,8 +183,9 @@ class TaskClient extends CamundaClient
 
     public static function submitAndReturnVariables(string $id, array $variables): array
     {
+        self::guardVariables($variables);
         $response = self::make()->post(
-            "task/$id/submit-form",
+            'task/'.self::segment($id).'/submit-form',
             ['variables' => $variables, 'withVariablesInReturn' => true]
         );
 

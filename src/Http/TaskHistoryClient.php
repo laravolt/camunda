@@ -11,7 +11,7 @@ class TaskHistoryClient extends CamundaClient
 {
     public static function find(string $id): TaskHistory
     {
-        $response = self::make()->get("history/task?taskId=$id");
+        $response = self::make()->get('history/task', ['taskId' => $id]);
 
         if ($response->status() === 200) {
             if (empty($response->json())) {
