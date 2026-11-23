@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Test fixture: message start, message catch and signal catch events. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  id="Definitions_events" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:message id="Message_order_placed" name="order_placed" />
+  <bpmn:message id="Message_payment_received" name="payment_received" />
+  <bpmn:signal id="Signal_release_all" name="release_all" />
+
+  <bpmn:process id="message_start_process" isExecutable="true" camunda:historyTimeToLive="P1D">
+    <bpmn:startEvent id="order_placed_start">
+      <bpmn:outgoing>Flow_ms_1</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_order_placed" />
+    </bpmn:startEvent>
+    <bpmn:userTask id="review_order" name="Review order">
+      <bpmn:incoming>Flow_ms_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_ms_2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="message_start_end">
+      <bpmn:incoming>Flow_ms_2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_ms_1" sourceRef="order_placed_start" targetRef="review_order" />
+    <bpmn:sequenceFlow id="Flow_ms_2" sourceRef="review_order" targetRef="message_start_end" />
+  </bpmn:process>
+
+  <bpmn:process id="catch_process" isExecutable="true" camunda:historyTimeToLive="P1D">
+    <bpmn:startEvent id="catch_start">
+      <bpmn:outgoing>Flow_c_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateCatchEvent id="wait_payment">
+      <bpmn:incoming>Flow_c_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_c_2</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_payment_received" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="wait_release">
+      <bpmn:incoming>Flow_c_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_c_3</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="Signal_release_all" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:userTask id="after_release" name="After release">
+      <bpmn:incoming>Flow_c_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_c_4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="catch_end">
+      <bpmn:incoming>Flow_c_4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_c_1" sourceRef="catch_start" targetRef="wait_payment" />
+    <bpmn:sequenceFlow id="Flow_c_2" sourceRef="wait_payment" targetRef="wait_release" />
+    <bpmn:sequenceFlow id="Flow_c_3" sourceRef="wait_release" targetRef="after_release" />
+    <bpmn:sequenceFlow id="Flow_c_4" sourceRef="after_release" targetRef="catch_end" />
+  </bpmn:process>
+</bpmn:definitions>

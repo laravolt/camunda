@@ -11,6 +11,10 @@ Convenience Laravel HTTP client wrapper to interact with Camunda REST API.
 
 ¹ 2.x does not declare an `illuminate/*` constraint; its test suite only ran against Laravel 10.
 
+The client talks to the Camunda 7 REST API. CI runs the integration tests against Camunda 7.24 (the last
+Community Edition release) and [Operaton](https://operaton.org) 2.2, its open-source continuation with the
+same API under `/engine-rest`.
+
 Upgrading from 2.x? See [UPGRADE.md](UPGRADE.md).
 
 ## Installation
@@ -88,28 +92,48 @@ ProcessInstanceClient::get($params);
 
 ProcessInstanceClient::variables(id: 'some-id');
 ProcessInstanceClient::delete(id: 'some-id');
+
+// Pause and resume an instance (3.1)
+ProcessInstanceClient::suspend('some-id');
+ProcessInstanceClient::activate('some-id');
+
+// Update and delete variables in one call (3.1)
+ProcessInstanceClient::setVariables('some-id',
+    modifications: ['status' => ['value' => 'checked', 'type' => 'String']],
+    deletions: ['draft'],
+);
 ```
 
 Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/process-instance/
 
 
-### Message Event
+### Message and Signal Events
 
 ```php
 use Laravolt\Camunda\Http\MessageEventClient;
-// Start processinstance with message event
-// Required
-// messageName : message event name
-// businessKey : Busniess key for process instance
+use Laravolt\Camunda\Http\SignalEventClient;
 
-// Rerturn Process insntance from message event
+// Start a process instance through its message start event; returns the new ProcessInstance.
+MessageEventClient::start(messageName: 'order_placed', businessKey: 'order-42', variables: [
+    'amount' => ['value' => 150, 'type' => 'Integer'],
+]);
 
-MessageEventClient::start(messageName: "testing",  businessKey: "businessKey")
+// Deliver a message to the instance waiting for it (intermediate catch event or receive task) (3.1).
+// Narrow the target with businessKey, processInstanceId or correlationKeys; all: true delivers to every match.
+$results = MessageEventClient::correlate(
+    messageName: 'payment_received',
+    businessKey: 'invoice-7',
+    processVariables: ['paid' => ['value' => true, 'type' => 'Boolean']],
+);
+$results[0]->resultType; // 'Execution' or 'ProcessDefinition'
 
-
+// Broadcast a signal to every instance and definition that waits for it (3.1).
+SignalEventClient::throw('release_all', variables: ['by' => ['value' => 'ops', 'type' => 'String']]);
 ```
 
+`correlate()` throws `ObjectNotFoundException` when nothing waits for the message.
 
+Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/message/ and https://docs.camunda.org/manual/latest/reference/rest/signal/
 
 ### Task
 ```php
@@ -153,6 +177,22 @@ ExternalTaskClient::unlock($task->id)
 
 // Get task locked
 $externalTaskLocked = ExternalTaskClient::getTaskLocked();
+
+// Report a failure; with retries 0 (the default) the engine opens an incident
+ExternalTaskClient::fail($task->id, 'worker1', 'printer offline', retries: 0);
+```
+
+### Incidents (3.1)
+```php
+use Laravolt\Camunda\Http\ExternalTaskClient;
+use Laravolt\Camunda\Http\IncidentClient;
+
+$incidents = IncidentClient::get(['processInstanceId' => $id]); // Incident[]
+IncidentClient::count(['incidentType' => 'failedExternalTask']);
+$incident = IncidentClient::find('incident-id');
+
+// Give the failed external task new retries: the engine resolves its incident
+ExternalTaskClient::setRetries($incident->configuration, 3);
 ```
 
 Camunda API reference: https://docs.camunda.org/manual/latest/reference/rest/external-task/

@@ -4,6 +4,7 @@ namespace Laravolt\Camunda\Tests;
 
 use Laravolt\Camunda\Http\DeploymentClient;
 use Laravolt\Camunda\Http\ExternalTaskClient;
+use Laravolt\Camunda\Http\IncidentClient;
 use Laravolt\Camunda\Http\ProcessDefinitionClient;
 use Laravolt\Camunda\Http\ProcessInstanceHistoryClient;
 use PHPUnit\Framework\Attributes\Group;
@@ -88,6 +89,23 @@ class ExternalTaskTest extends IntegrationTestCase
         $task = $externalTasks[0];
         $unlocked = ExternalTaskClient::unlock($task->id);
         $this->assertTrue($unlocked);
+    }
+
+    public function test_failure_without_retries_opens_an_incident_that_retries_resolve()
+    {
+        $instance = $this->createExternalProcess();
+        $task = ExternalTaskClient::fetchAndLock('worker1', [['topicName' => 'pdf', 'lockDuration' => 600_000]])[0];
+
+        ExternalTaskClient::fail($task->id, 'worker1', 'printer offline', retryTimeout: 0, retries: 0);
+
+        $incidents = IncidentClient::get(['processInstanceId' => $instance->id]);
+        $this->assertCount(1, $incidents);
+        $this->assertSame('failedExternalTask', $incidents[0]->incidentType);
+        $this->assertSame('printer offline', $incidents[0]->incidentMessage);
+        $this->assertSame($incidents[0]->id, IncidentClient::find($incidents[0]->id)->id);
+
+        $this->assertTrue(ExternalTaskClient::setRetries($task->id, 1));
+        $this->assertSame(0, IncidentClient::count(['processInstanceId' => $instance->id]));
     }
 
     public function test_unlock_unlocked_task()

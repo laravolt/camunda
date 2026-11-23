@@ -66,16 +66,27 @@ jobs:
         run: vendor/bin/phpunit --exclude-group integration
 
   integration:
-    name: Integration - Camunda 7.24 - PHP 8.4 - Laravel 13
+    name: Integration - ${{ matrix.engine.name }} - PHP 8.4 - Laravel 13
     runs-on: ubuntu-latest
     timeout-minutes: 20
     # Make this job required once the first run is green: the 52 integration tests have never
     # been run against Camunda 7.24, so a failure here must not block PRs yet.
     continue-on-error: true
 
+    strategy:
+      fail-fast: false
+      matrix:
+        # Camunda 7 Community Edition ends with 7.24; Operaton is its open-source
+        # continuation with the same REST API under /engine-rest.
+        engine:
+          - name: Camunda 7.24
+            image: camunda/camunda-bpm-platform:run-7.24.0
+          - name: Operaton 2.2
+            image: operaton/operaton:2.2.1
+
     services:
       camunda:
-        image: camunda/camunda-bpm-platform:run-7.24.0
+        image: ${{ matrix.engine.image }}
         ports:
           - 8080:8080
 
@@ -102,7 +113,7 @@ jobs:
             if curl -fs http://localhost:8080/engine-rest/version; then echo; exit 0; fi
             sleep 5
           done
-          echo "Camunda REST API not ready after 180 s" >&2
+          echo "${{ matrix.engine.name }} REST API not ready after 180 s" >&2
           exit 1
 
       - name: Run integration tests
