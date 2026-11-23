@@ -4,6 +4,7 @@ namespace Laravolt\Camunda\Http;
 
 use Laravolt\Camunda\Dto\ExternalTask;
 use Laravolt\Camunda\Exceptions\CamundaException;
+use Laravolt\Camunda\Exceptions\InvalidArgumentException;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
 use Laravolt\Camunda\Exceptions\UnexpectedResponseException;
 
@@ -140,10 +141,11 @@ class ExternalTaskClient extends CamundaClient
         string $workerId,
         string $errorMessage = "Does not compute",
         int    $retryTimeout = 60000,
+        int    $retries = 0,
     ): bool
     {
-
-        $payload = compact('workerId', 'errorMessage', 'retryTimeout');
+        // retries 0 (the engine's default) opens a failedExternalTask incident.
+        $payload = compact('workerId', 'errorMessage', 'retryTimeout', 'retries');
         $url = 'external-task/'.self::segment($id).'/failure';
         $response = self::make()->post($url, $payload);
         $isSuccessful = $response->status() === 204;
@@ -153,6 +155,29 @@ class ExternalTaskClient extends CamundaClient
         }
 
         return $isSuccessful;
+    }
+
+    /**
+     * Set the retries of an external task. Retries above zero resolve the incident
+     * a task gets when it fails with no retries left.
+     */
+    public static function setRetries(string $id, int $retries): bool
+    {
+        if ($retries < 0) {
+            throw new InvalidArgumentException('Retries cannot be negative');
+        }
+
+        $url = 'external-task/'.self::segment($id).'/retries';
+        $response = self::make()->put($url, ['retries' => $retries]);
+
+        if ($response->status() === 404) {
+            throw new ObjectNotFoundException($response->json('message'));
+        }
+        if ($response->status() !== 204) {
+            throw (new UnexpectedResponseException)->for($url, ['retries' => $retries], (array) $response->json());
+        }
+
+        return true;
     }
 
     public static function lock(string $id, string $workerId, int $duration): bool

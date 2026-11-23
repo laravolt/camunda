@@ -6,7 +6,9 @@ namespace Laravolt\Camunda\Http;
 
 use Laravolt\Camunda\Dto\ProcessInstance;
 use Laravolt\Camunda\Dto\Variable;
+use Laravolt\Camunda\Exceptions\InvalidArgumentException;
 use Laravolt\Camunda\Exceptions\ObjectNotFoundException;
+use Laravolt\Camunda\Exceptions\UnexpectedResponseException;
 
 class ProcessInstanceClient extends CamundaClient
 {
@@ -111,6 +113,68 @@ class ProcessInstanceClient extends CamundaClient
         }
 
         return $result;
+    }
+
+    /**
+     * Suspend a process instance: its tasks and jobs stay where they are until it is activated.
+     */
+    public static function suspend(string $id): bool
+    {
+        return self::setSuspended($id, true);
+    }
+
+    public static function activate(string $id): bool
+    {
+        return self::setSuspended($id, false);
+    }
+
+    /**
+     * Update and delete process variables in one call (`POST /process-instance/{id}/variables`).
+     *
+     * @param  array<string, array{value: mixed, type?: string, valueInfo?: array}>  $modifications
+     * @param  string[]  $deletions
+     */
+    public static function setVariables(string $id, array $modifications = [], array $deletions = []): bool
+    {
+        if ($modifications === [] && $deletions === []) {
+            throw new InvalidArgumentException('Nothing to modify: pass modifications or deletions');
+        }
+
+        $payload = [];
+        if ($modifications !== []) {
+            self::guardVariables($modifications);
+            $payload['modifications'] = $modifications;
+        }
+        if ($deletions !== []) {
+            $payload['deletions'] = array_values($deletions);
+        }
+
+        $url = 'process-instance/'.self::segment($id).'/variables';
+        $response = self::make()->post($url, $payload);
+
+        if ($response->status() === 404) {
+            throw new ObjectNotFoundException($response->json('message'));
+        }
+        if ($response->status() !== 204) {
+            throw (new UnexpectedResponseException)->for($url, $payload, (array) $response->json());
+        }
+
+        return true;
+    }
+
+    protected static function setSuspended(string $id, bool $suspended): bool
+    {
+        $url = 'process-instance/'.self::segment($id).'/suspended';
+        $response = self::make()->put($url, ['suspended' => $suspended]);
+
+        if ($response->status() === 404) {
+            throw new ObjectNotFoundException($response->json('message'));
+        }
+        if ($response->status() !== 204) {
+            throw (new UnexpectedResponseException)->for($url, ['suspended' => $suspended], (array) $response->json());
+        }
+
+        return true;
     }
 
     public static function delete(string $id): bool

@@ -1,5 +1,15 @@
 # Upgrade Guide
 
+## From 3.0 to 3.1
+
+No breaking changes. New: `MessageEventClient::correlate()`, `SignalEventClient`, `IncidentClient`,
+`ProcessInstanceClient::suspend()`, `activate()` and `setVariables()`, `ExternalTaskClient::setRetries()`,
+and a `retries` argument on `ExternalTaskClient::fail()` (default 0, as before).
+
+`MessageEventClient::start()` no longer sends a random `processInstanceId` with the message, which kept
+the engine from matching any message start event. It now returns the instance from the correlation result
+and throws `ObjectNotFoundException` if the message went to a waiting instance instead of starting one.
+
 ## From 2.x to 3.0
 
 ### Requirements
