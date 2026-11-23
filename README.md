@@ -11,9 +11,9 @@ Convenience Laravel HTTP client wrapper to interact with Camunda REST API.
 
 ¹ 2.x does not declare an `illuminate/*` constraint; its test suite only ran against Laravel 10.
 
-The client talks to the Camunda 7 REST API. CI runs the integration tests against Camunda 7.24 (the last
-Community Edition release) and [Operaton](https://operaton.org) 2.2, its open-source continuation with the
-same API under `/engine-rest`.
+The client talks to the Camunda 7 REST API (`/engine-rest`). Camunda 7 Community Edition ended with 7.24
+and its Docker image is no longer published, so CI runs the integration tests against
+[Operaton](https://operaton.org) 2.2, the open-source continuation of Camunda 7 with the same REST API.
 
 Upgrading from 2.x? See [UPGRADE.md](UPGRADE.md).
 

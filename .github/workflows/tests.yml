@@ -69,18 +69,14 @@ jobs:
     name: Integration - ${{ matrix.engine.name }} - PHP 8.4 - Laravel 13
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Make this job required once the first run is green: the 52 integration tests have never
-    # been run against Camunda 7.24, so a failure here must not block PRs yet.
-    continue-on-error: true
 
     strategy:
       fail-fast: false
       matrix:
-        # Camunda 7 Community Edition ends with 7.24; Operaton is its open-source
-        # continuation with the same REST API under /engine-rest.
+        # Camunda 7 Community Edition ended with 7.24 and its image
+        # (camunda/camunda-bpm-platform) is no longer on Docker Hub, so the job runs on
+        # Operaton, the open-source continuation with the same REST API under /engine-rest.
         engine:
-          - name: Camunda 7.24
-            image: camunda/camunda-bpm-platform:run-7.24.0
           - name: Operaton 2.2
             image: operaton/operaton:2.2.1
 
@@ -107,7 +103,7 @@ jobs:
           composer require "orchestra/testbench:^11.0" --dev --no-update --no-interaction
           composer update --prefer-stable --prefer-dist --no-interaction --no-progress
 
-      - name: Wait for Camunda REST API (max 180 s)
+      - name: Wait for the engine REST API (max 180 s)
         run: |
           for i in $(seq 1 36); do
             if curl -fs http://localhost:8080/engine-rest/version; then echo; exit 0; fi
